@@ -75,6 +75,16 @@
             android:icon="@drawable/ic_info_outline_24dp"
             android:title="@string/dnd_title"
             android:summary="@string/dnd_summary" />
+
+        <Preference
+            android:key="doze"
+            android:title="@string/ambient_display_gestures_title"
+            android:summary="@string/ambient_display_gestures_summary">
+            <intent android:action="android.intent.action.MAIN"
+                 android:targetPackage="com.realmeparts"
+                 android:targetClass="com.realmeparts.doze.DozeSettingsActivity"/>
+        </Preference>
+
     </PreferenceCategory>
 
     <PreferenceCategory

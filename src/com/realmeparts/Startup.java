@@ -24,6 +24,9 @@ import android.content.SharedPreferences;
 import android.provider.Settings;
 import android.text.TextUtils;
 import androidx.preference.PreferenceManager;
+import android.util.Log;
+
+import com.realmeparts.doze.DozeUtils;
 
 public class Startup extends BroadcastReceiver {
 
@@ -48,6 +51,10 @@ public class Startup extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, final Intent bootintent) {
+        if (DozeUtils.isDozeEnabled(context) && DozeUtils.sensorsEnabled(context)) {
+            Log.d(TAG, "Starting Doze service");
+            DozeUtils.startService(context);
+        }
         boolean enabled = false;
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_DC_SWITCH, false);
