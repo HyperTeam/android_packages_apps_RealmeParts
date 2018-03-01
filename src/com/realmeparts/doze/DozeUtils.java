@@ -23,6 +23,8 @@ import android.content.pm.PackageManager;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.hardware.display.AmbientDisplayConfiguration;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.Log;
@@ -140,5 +142,14 @@ public final class DozeUtils {
     public static boolean sensorsEnabled(Context context) {
         return isPickUpEnabled(context) || isHandwaveGestureEnabled(context)
                 || isPocketGestureEnabled(context);
+    }
+
+    public static Sensor getSensor(SensorManager sm, String type) {
+        for (Sensor sensor : sm.getSensorList(Sensor.TYPE_ALL)) {
+            if (type.equals(sensor.getStringType())) {
+                return sensor;
+            }
+        }
+        return null;
     }
 }
