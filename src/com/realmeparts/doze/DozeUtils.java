@@ -22,12 +22,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.PowerManager;
 import android.os.SystemClock;
+import android.hardware.display.AmbientDisplayConfiguration;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.Log;
-
 import androidx.preference.PreferenceManager;
-import com.android.internal.hardware.AmbientDisplayConfiguration;
 
 import static android.provider.Settings.Secure.DOZE_ALWAYS_ON;
 import static android.provider.Settings.Secure.DOZE_ENABLED;
