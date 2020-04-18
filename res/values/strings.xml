@@ -33,5 +33,5 @@
     <string name="refresh_rate_title">Force 90Hz peak refresh rate</string>
     <string name="refresh_rate_warning">Using forced 90Hz will impact battery life significantly</string>
     <string name="fps_info_title">FPS overlay</string>
-    <string name="fps_info_summary">Show overlay with with current frames per second</string>
+    <string name="fps_info_summary">Show overlay with current frames per second</string>
 </resources>
