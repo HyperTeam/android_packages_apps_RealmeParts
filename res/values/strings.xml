@@ -16,22 +16,29 @@
     <string name="device_summary">Adjust Realme specific device settings</string>
     <string name="display_title">Display</string>
     <!-- DC dimming -->
-    <string name="dc_mode_summary"></string>
+    <string name="dc_mode_summary">Reduces screen flicker while brightness is low</string>
     <string name="dc_mode_title">DC-Dimming</string>
     <string name="tile_dc_mode">DC-Dimming</string>
+    <!-- srgb mode -->
+    <string name="srgb_mode_summary">sRGB mode for simpler colour display</string>
+    <string name="srgb_mode_title">sRGB mode</string>
+    <string name="tile_srgb_mode">sRGB</string>
     <!-- game mode -->
-    <string name="game_mode_summary"></string>
+    <string name="game_mode_summary">Boost Touch Sampling Rate</string>
     <string name="game_mode_title">Game mode</string>
     <string name="tile_game_mode">game mode</string>
 
     <!-- Refresh rate -->
-    <string name="refresh_title">Screen refresh</string>
-    <string name="tile_refresh_rate">Screen refresh rate</string>
-    <string name="auto_refresh_rate_summary">Let apps decide what refresh rate to use</string>
-    <string name="auto_refresh_rate_title">Auto refresh mode</string>
+    <string name="refresh_title">Screen Refresh rate</string>
+    <string name="tile_refresh_rate">Refresh rate</string>
+
+    <string name="auto_refresh_rate_summary">Let apps decide which refresh rate to use</string>
+    <string name="auto_refresh_rate_title">Auto</string>
+
     <string name="refresh_rate_summary">Choose between 60Hz or 90Hz peak refresh</string>
-    <string name="refresh_rate_title">Force 90Hz peak refresh rate</string>
-    <string name="refresh_rate_warning">Using forced 90Hz will impact battery life significantly</string>
+    <string name="refresh_rate_title">Forced 90Hz</string>
+    <string name="refresh_rate_warning">Using forced 90Hz will impact battery life significantly and Enabling battery saver will switch to 60hz</string>
+
     <string name="fps_info_title">FPS overlay</string>
     <string name="fps_info_summary">Show overlay with current frames per second</string>
 </resources>

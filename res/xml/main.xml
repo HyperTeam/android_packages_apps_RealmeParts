@@ -21,6 +21,11 @@
             android:title="@string/dc_mode_title" />
 
         <SwitchPreference
+            android:key="srgb"
+            android:summary="@string/srgb_mode_summary"
+            android:title="@string/srgb_mode_title" />
+
+        <SwitchPreference
             android:key="game"
             android:summary="@string/game_mode_summary"
             android:title="@string/game_mode_title" />

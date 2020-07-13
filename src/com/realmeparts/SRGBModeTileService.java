@@ -27,7 +27,7 @@ import androidx.preference.PreferenceManager;
 import com.realmeparts.DeviceSettings;
 
 @TargetApi(24)
-public class GameModeTileService extends TileService {
+public class SRGBModeTileService extends TileService {
     private boolean enabled = false;
 
     @Override
@@ -49,7 +49,7 @@ public class GameModeTileService extends TileService {
     public void onStartListening() {
         super.onStartListening();
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        enabled = GameModeSwitch.isCurrentlyEnabled(this);
+        enabled = SRGBModeSwitch.isCurrentlyEnabled(this);
         getQsTile().setState(enabled ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
         getQsTile().updateTile();
 
@@ -64,9 +64,9 @@ public class GameModeTileService extends TileService {
     public void onClick() {
         super.onClick();
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        enabled = GameModeSwitch.isCurrentlyEnabled(this);
-        Utils.writeValue(GameModeSwitch.getFile(), enabled ? "0" : "1");
-        sharedPrefs.edit().putBoolean(DeviceSettings.KEY_GAME_SWITCH, enabled ? false : true).commit();
+        enabled = SRGBModeSwitch.isCurrentlyEnabled(this);
+        Utils.writeValue(SRGBModeSwitch.getFile(), enabled ? "0" : "1");
+        sharedPrefs.edit().putBoolean(DeviceSettings.KEY_SRGB_SWITCH, enabled ? false : true).commit();
         getQsTile().setState(enabled ? Tile.STATE_INACTIVE : Tile.STATE_ACTIVE);
         getQsTile().updateTile();
     }
