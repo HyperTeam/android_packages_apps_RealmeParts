@@ -58,4 +58,14 @@
             android:summary="@string/fps_info_summary"
             android:persistent="true" />
     </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="misc"
+        android:title="@string/misc_title">
+
+        <SwitchPreference
+            android:key="otg"
+            android:summary="@string/otg_mode_summary"
+            android:title="@string/otg_mode_title" />
+    </PreferenceCategory>
 </PreferenceScreen>
