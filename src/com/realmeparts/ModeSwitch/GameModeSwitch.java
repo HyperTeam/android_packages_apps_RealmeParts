@@ -17,17 +17,27 @@
 */
 package com.realmeparts;
 
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.PreferenceManager;
+import android.widget.Toast;
 
 import com.realmeparts.DeviceSettings;
 
 public class GameModeSwitch implements OnPreferenceChangeListener {
-
     private static final String FILE = "/proc/touchpanel/game_switch_enable";
+
+    private static boolean GameMode = false;
+    private static Context mContext;
+    private static NotificationManager mNotificationManager;
+
+    public GameModeSwitch(Context context) {
+        mContext = context;
+    }
 
     public static String getFile() {
         if (Utils.fileWritable(FILE)) {
@@ -44,10 +54,48 @@ public class GameModeSwitch implements OnPreferenceChangeListener {
         return Utils.getFileValueAsBoolean(getFile(), false);
     }
 
-    @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         Boolean enabled = (Boolean) newValue;
         Utils.writeValue(getFile(), enabled ? "1" : "0");
+        GameMode = enabled;
+        GameModeDND();
         return true;
+    }
+
+    public static boolean checkNotificationPolicy(Context context){
+        mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        return mNotificationManager.isNotificationPolicyAccessGranted();
+    }
+
+    public static void GameModeDND() {
+        if (!checkNotificationPolicy(mContext)){
+            //Launch Do Not Disturb Access settings
+            Intent DNDAccess = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+            mContext.startActivity(DNDAccess);
+        }
+        else if (mNotificationManager == null && (GameMode || GameModeTileService.GameModeTile)) {
+            checkNotificationPolicy(mContext);
+            activateDND();
+            ShowToast();
+        } else if (checkNotificationPolicy(mContext) && (GameMode || GameModeTileService.GameModeTile)) {
+            activateDND();
+            ShowToast();
+        } else if (!GameMode || !GameModeTileService.GameModeTile ){
+            mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL);
+            ShowToast();
+        }
+    }
+
+    public static void activateDND(){
+        mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_PRIORITY);
+        mNotificationManager.setNotificationPolicy(
+        new NotificationManager.Policy(NotificationManager.Policy.PRIORITY_CATEGORY_MEDIA, 0, 0));
+    }
+
+    public static void ShowToast(){
+        if (GameMode || GameModeTileService.GameModeTile) {
+            Toast.makeText(mContext, "GameMode is activated. ", Toast.LENGTH_SHORT).show();
+        } else
+            Toast.makeText(mContext, "GameMode is deactivated. ", Toast.LENGTH_SHORT).show();
     }
 }

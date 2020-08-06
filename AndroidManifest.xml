@@ -22,6 +22,9 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
+    <!-- Required to enable dnd during game mode -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+
     <protected-broadcast android:name="com.realmeparts.UPDATE_SETTINGS" />
 
     <uses-sdk
