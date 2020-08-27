@@ -29,6 +29,11 @@
             android:key="game"
             android:summary="@string/game_mode_summary"
             android:title="@string/game_mode_title" />
+
+        <Preference
+            android:icon="@drawable/ic_info_outline_24dp"
+            android:persistent="false"
+            android:summary="@string/game_mode_warning" />
     </PreferenceCategory>
 
     <PreferenceCategory
