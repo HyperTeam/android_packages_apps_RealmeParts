@@ -16,22 +16,24 @@
         android:title="@string/display_title">
 
         <SwitchPreference
+            android:icon="@drawable/dc_mode_icon"
             android:key="dc"
             android:summary="@string/dc_mode_summary"
             android:title="@string/dc_mode_title" />
 
         <SwitchPreference
+            android:icon="@drawable/srgb_mode_icon"
             android:key="srgb"
             android:summary="@string/srgb_mode_summary"
             android:title="@string/srgb_mode_title" />
 
         <SwitchPreference
+            android:icon="@drawable/game_mode_icon"
             android:key="game"
             android:summary="@string/game_mode_summary"
             android:title="@string/game_mode_title" />
 
         <Preference
-            android:icon="@drawable/ic_info_outline_24dp"
             android:persistent="false"
             android:summary="@string/game_mode_warning" />
     </PreferenceCategory>
@@ -41,23 +43,25 @@
         android:title="@string/refresh_title">
 
         <SwitchPreference
+            android:icon="@drawable/auto_refresh_rate_icon"
             android:key="auto_refresh_rate"
             android:summary="@string/auto_refresh_rate_summary"
             android:title="@string/auto_refresh_rate_title"
             android:persistent="true" />
 
         <SwitchPreference
+            android:icon="@drawable/refresh_rate_icon"
             android:key="refresh_rate"
             android:summary="@string/refresh_rate_summary"
             android:title="@string/refresh_rate_title"
             android:persistent="false" />
 
         <Preference
-            android:icon="@drawable/ic_info_outline_24dp"
             android:persistent="false"
             android:summary="@string/refresh_rate_warning" />
 
         <SwitchPreference
+            android:icon="@drawable/fps_info_icon"
             android:key="fps_info"
             android:title="@string/fps_info_title"
             android:summary="@string/fps_info_summary"
@@ -69,6 +73,7 @@
         android:title="@string/misc_title">
 
         <SwitchPreference
+            android:icon="@drawable/usb_otg_icon"
             android:key="otg"
             android:summary="@string/otg_mode_summary"
             android:title="@string/otg_mode_title" />
