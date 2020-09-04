@@ -28,7 +28,6 @@ import com.realmeparts.DeviceSettings;
 
 public class RefreshRateSwitch implements OnPreferenceChangeListener {
 
-    public static final String SETTINGS_KEY = DeviceSettings.KEY_SETTINGS_PREFIX + DeviceSettings.KEY_REFRESH_RATE;
     private Context mContext;
 
     public RefreshRateSwitch(Context context) {
@@ -50,10 +49,20 @@ public class RefreshRateSwitch implements OnPreferenceChangeListener {
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         Boolean enabled = (Boolean) newValue;
-        Settings.System.putFloat(mContext.getContentResolver(),
-                Settings.System.PEAK_REFRESH_RATE, enabled ? 90f : 60f);
-        Settings.System.putFloat(mContext.getContentResolver(),
-                Settings.System.MIN_REFRESH_RATE, enabled ? 90f : 60f);
+        switch ((preference == DeviceSettings.mRefreshRate90 && enabled) ? 1 : 0) {
+            case 1:
+            Settings.System.putFloat(mContext.getContentResolver(),
+                Settings.System.PEAK_REFRESH_RATE, 90f);
+            Settings.System.putFloat(mContext.getContentResolver(),
+                Settings.System.MIN_REFRESH_RATE, 90f);
+            break;
+            case 0:
+            Settings.System.putFloat(mContext.getContentResolver(),
+                Settings.System.PEAK_REFRESH_RATE, 60f);
+            Settings.System.putFloat(mContext.getContentResolver(),
+                Settings.System.MIN_REFRESH_RATE, 60f);
+            break;
+        }
         return true;
     }
 }

@@ -44,6 +44,8 @@ import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.TwoStatePreference;
 
+import com.realmeparts.RadioButtonPreference;
+
 public class DeviceSettings extends PreferenceFragment
         implements Preference.OnPreferenceChangeListener {
 
@@ -54,8 +56,7 @@ public class DeviceSettings extends PreferenceFragment
     public static final String KEY_GAME_SWITCH = "game";
 
     private static final String KEY_CATEGORY_REFRESH = "refresh";
-    public static final String KEY_REFRESH_RATE = "refresh_rate";
-    public static final String KEY_AUTO_REFRESH_RATE = "auto_refresh_rate";
+
     public static final String KEY_FPS_INFO = "fps_info";
 
     public static final String KEY_SETTINGS_PREFIX = "device_setting_";
@@ -64,10 +65,11 @@ public class DeviceSettings extends PreferenceFragment
     private static TwoStatePreference mSRGBModeSwitch;
     private static TwoStatePreference mOTGModeSwitch;
     private static TwoStatePreference mGameModeSwitch;
-    private static TwoStatePreference mRefreshRate;
-    private static SwitchPreference mAutoRefreshRate;
     private static SwitchPreference mFpsInfo;
     private static NotificationManager mNotificationManager;
+
+    public static RadioButtonPreference mRefreshRate90;
+    public static RadioButtonPreference mRefreshRate60;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -95,27 +97,31 @@ public class DeviceSettings extends PreferenceFragment
         mGameModeSwitch.setChecked(GameModeSwitch.isCurrentlyEnabled(this.getContext()));
         mGameModeSwitch.setOnPreferenceChangeListener(new GameModeSwitch(getContext()));
 
-        mAutoRefreshRate = (SwitchPreference) findPreference(KEY_AUTO_REFRESH_RATE);
-        mAutoRefreshRate.setChecked(AutoRefreshRateSwitch.isCurrentlyEnabled(this.getContext()));
-        mAutoRefreshRate.setOnPreferenceChangeListener(new AutoRefreshRateSwitch(getContext()));
+        mRefreshRate90 = (RadioButtonPreference) findPreference("refresh_rate_90");
+        mRefreshRate90.setChecked(RefreshRateSwitch.isCurrentlyEnabled(this.getContext()));
+        mRefreshRate90.setOnPreferenceChangeListener(new RefreshRateSwitch(getContext()));
 
-        mRefreshRate = (TwoStatePreference) findPreference(KEY_REFRESH_RATE);
-        mRefreshRate.setEnabled(!AutoRefreshRateSwitch.isCurrentlyEnabled(this.getContext()));
-        mRefreshRate.setChecked(RefreshRateSwitch.isCurrentlyEnabled(this.getContext()));
-        mRefreshRate.setOnPreferenceChangeListener(new RefreshRateSwitch(getContext()));
+        mRefreshRate60 = (RadioButtonPreference) findPreference("refresh_rate_60");
+        mRefreshRate60.setChecked(!RefreshRateSwitch.isCurrentlyEnabled(this.getContext()));
+        mRefreshRate60.setOnPreferenceChangeListener(new RefreshRateSwitch(getContext()));
 
         mFpsInfo = (SwitchPreference) findPreference(KEY_FPS_INFO);
         mFpsInfo.setChecked(prefs.getBoolean(KEY_FPS_INFO, false));
         mFpsInfo.setOnPreferenceChangeListener(this);
-
     }
 
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
-        if (preference == mAutoRefreshRate) {
-              mRefreshRate.setEnabled(!AutoRefreshRateSwitch.isCurrentlyEnabled(this.getContext()));
-        }
-        return super.onPreferenceTreeClick(preference);
+       if(preference == mRefreshRate90) {
+                mRefreshRate60.setChecked(false);
+                mRefreshRate90.setChecked(true);
+                return true;
+            } else if (preference == mRefreshRate60) {
+                mRefreshRate60.setChecked(true);
+                mRefreshRate90.setChecked(false);
+                return true;
+            }
+            return super.onPreferenceTreeClick(preference);
     }
 
     @Override

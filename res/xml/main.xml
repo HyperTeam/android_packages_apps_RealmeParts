@@ -42,19 +42,20 @@
         android:key="refresh"
         android:title="@string/refresh_title">
 
-        <SwitchPreference
-            android:icon="@drawable/auto_refresh_rate_icon"
-            android:key="auto_refresh_rate"
-            android:summary="@string/auto_refresh_rate_summary"
-            android:title="@string/auto_refresh_rate_title"
-            android:persistent="true" />
+        <com.realmeparts.RadioButtonPreference
+            android:icon="@drawable/refresh_rate_90_icon"
+            android:key="refresh_rate_90"
+            android:checked="true"
+            android:enabled="true"
+            android:title="@string/refresh_rate_90_title"
+            android:summary="@string/refresh_rate_90_summary" />
 
-        <SwitchPreference
-            android:icon="@drawable/refresh_rate_icon"
-            android:key="refresh_rate"
-            android:summary="@string/refresh_rate_summary"
-            android:title="@string/refresh_rate_title"
-            android:persistent="false" />
+        <com.realmeparts.RadioButtonPreference
+            android:icon="@drawable/refresh_rate_60_icon"
+            android:key="refresh_rate_60"
+            android:checked="false"
+            android:title="@string/refresh_rate_60_title"
+            android:summary="@string/refresh_rate_60_summary" />
 
         <Preference
             android:persistent="false"

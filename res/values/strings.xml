@@ -37,14 +37,13 @@
     <!-- Refresh rate -->
     <string name="refresh_title">Screen Refresh rate</string>
     <string name="tile_refresh_rate">Refresh rate</string>
+    <string name="refresh_rate_60_title">60Hz</string>
+    <string name="refresh_rate_60_summary">Less smoothness but slightly extended battery life</string>
+    <string name="refresh_rate_90_title">90Hz</string>
+    <string name="refresh_rate_90_summary">Maximum smoothness with higher refresh rate</string>
+    <string name="refresh_rate_warning">The higher the screen refresh rate, the smoother the screen experience</string>
 
-    <string name="auto_refresh_rate_summary">Let apps decide which refresh rate to use</string>
-    <string name="auto_refresh_rate_title">Auto</string>
-
-    <string name="refresh_rate_summary">Choose between 60Hz or 90Hz peak refresh</string>
-    <string name="refresh_rate_title">Forced 90Hz</string>
-    <string name="refresh_rate_warning">Using forced 90Hz will impact battery life significantly and Enabling battery saver will switch to 60hz</string>
-
+    <!-- fps info -->
     <string name="fps_info_title">FPS overlay</string>
     <string name="fps_info_summary">Show overlay with current frames per second</string>
 </resources>
