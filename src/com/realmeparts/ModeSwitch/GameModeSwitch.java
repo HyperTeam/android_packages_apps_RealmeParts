@@ -35,9 +35,11 @@ public class GameModeSwitch implements OnPreferenceChangeListener {
     private static boolean GameMode = false;
     private static Context mContext;
     private static NotificationManager mNotificationManager;
+    private static int userSelectedDndMode;
 
     public GameModeSwitch(Context context) {
         mContext = context;
+	userSelectedDndMode = mContext.getSystemService(NotificationManager.class).getCurrentInterruptionFilter();
     }
 
     public static String getFile() {
@@ -75,15 +77,12 @@ public class GameModeSwitch implements OnPreferenceChangeListener {
             Intent DNDAccess = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
             mContext.startActivity(DNDAccess);
         }
-        else if (mNotificationManager == null && (GameMode || GameModeTileService.GameModeTile)) {
-            checkNotificationPolicy(mContext);
+        else if (GameMode || GameModeTileService.GameModeTile){
+	    userSelectedDndMode = mContext.getSystemService(NotificationManager.class).getCurrentInterruptionFilter();
             activateDND();
             ShowToast();
-        } else if (checkNotificationPolicy(mContext) && (GameMode || GameModeTileService.GameModeTile)) {
-            activateDND();
-            ShowToast();
-        } else if (!GameMode || !GameModeTileService.GameModeTile ){
-            mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL);
+        } else {
+            mNotificationManager.setInterruptionFilter(userSelectedDndMode);
             ShowToast();
         }
     }
