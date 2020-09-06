@@ -60,13 +60,6 @@
         <Preference
             android:persistent="false"
             android:summary="@string/refresh_rate_warning" />
-
-        <SwitchPreference
-            android:icon="@drawable/fps_info_icon"
-            android:key="fps_info"
-            android:title="@string/fps_info_title"
-            android:summary="@string/fps_info_summary"
-            android:persistent="true" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -78,5 +71,12 @@
             android:key="otg"
             android:summary="@string/otg_mode_summary"
             android:title="@string/otg_mode_title" />
+
+        <SwitchPreference
+            android:icon="@drawable/fps_info_icon"
+            android:key="fps_info"
+            android:title="@string/fps_info_title"
+            android:summary="@string/fps_info_summary"
+            android:persistent="true" />
     </PreferenceCategory>
 </PreferenceScreen>
