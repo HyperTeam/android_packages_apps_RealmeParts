@@ -61,7 +61,6 @@ public class GameModeSwitch implements OnPreferenceChangeListener {
         Boolean enabled = (Boolean) newValue;
         Utils.writeValue(getFile(), enabled ? "1" : "0");
         SystemProperties.set("perf_profile", enabled ? "1" : "0" );
-        GameMode = enabled;
         GameModeDND();
         return true;
     }
@@ -72,29 +71,28 @@ public class GameModeSwitch implements OnPreferenceChangeListener {
     }
 
     public static void GameModeDND() {
-        if (!checkNotificationPolicy(mContext)){
+        if (!checkNotificationPolicy(mContext)) {
             //Launch Do Not Disturb Access settings
             Intent DNDAccess = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
             mContext.startActivity(DNDAccess);
-        }
-        else if (GameMode || GameModeTileService.GameModeTile){
+        } else if (isCurrentlyEnabled(mContext)) {
 	    userSelectedDndMode = mContext.getSystemService(NotificationManager.class).getCurrentInterruptionFilter();
             activateDND();
             ShowToast();
-        } else {
+        } else if (!isCurrentlyEnabled(mContext)) {
             mNotificationManager.setInterruptionFilter(userSelectedDndMode);
             ShowToast();
         }
     }
 
-    public static void activateDND(){
+    public static void activateDND() {
         mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_PRIORITY);
         mNotificationManager.setNotificationPolicy(
         new NotificationManager.Policy(NotificationManager.Policy.PRIORITY_CATEGORY_MEDIA, 0, 0));
     }
 
-    public static void ShowToast(){
-        if (GameMode || GameModeTileService.GameModeTile) {
+    public static void ShowToast() {
+        if (isCurrentlyEnabled(mContext)) {
             Toast.makeText(mContext, "GameMode is activated. ", Toast.LENGTH_SHORT).show();
         } else
             Toast.makeText(mContext, "GameMode is deactivated. ", Toast.LENGTH_SHORT).show();

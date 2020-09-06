@@ -18,6 +18,7 @@
 package com.realmeparts;
 
 import android.annotation.TargetApi;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,8 +32,8 @@ import com.realmeparts.DeviceSettings;
 @TargetApi(24)
 public class GameModeTileService extends TileService {
     private boolean enabled = false;
-    public static boolean GameModeTile = false;
     private Context mContext;
+    private NotificationManager mNotificationManager;
 
     @Override
     public void onDestroy() {
@@ -68,12 +69,25 @@ public class GameModeTileService extends TileService {
         super.onClick();
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         enabled = GameModeSwitch.isCurrentlyEnabled(this);
-        GameModeTile = enabled ? false : true;
         Utils.writeValue(GameModeSwitch.getFile(), enabled ? "0" : "1");
+        GameModeTileDND();
         SystemProperties.set("perf_profile", enabled ? "0" : "1" );
-        GameModeSwitch.GameModeDND();
         sharedPrefs.edit().putBoolean(DeviceSettings.KEY_GAME_SWITCH, enabled ? false : true).commit();
         getQsTile().setState(enabled ? Tile.STATE_INACTIVE : Tile.STATE_ACTIVE);
         getQsTile().updateTile();
+    }
+
+    private void GameModeTileDND() {
+        mNotificationManager = (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
+        switch ((GameModeSwitch.isCurrentlyEnabled(this)) ? 1 : 0) {
+        case 1:
+        mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_PRIORITY);
+        mNotificationManager.setNotificationPolicy(
+        new NotificationManager.Policy(NotificationManager.Policy.PRIORITY_CATEGORY_MEDIA,0, 0));
+        break;
+        case 0:
+        mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL);
+        break;
+        }
     }
 }
