@@ -68,6 +68,7 @@ public class DeviceSettings extends PreferenceFragment
     private static TwoStatePreference mSRGBModeSwitch;
     private static TwoStatePreference mOTGModeSwitch;
     private static TwoStatePreference mGameModeSwitch;
+    public static TwoStatePreference mRefreshRate90Forced;
     private static SwitchPreference mFpsInfo;
     private static NotificationManager mNotificationManager;
 
@@ -100,6 +101,10 @@ public class DeviceSettings extends PreferenceFragment
         mGameModeSwitch.setChecked(GameModeSwitch.isCurrentlyEnabled(this.getContext()));
         mGameModeSwitch.setOnPreferenceChangeListener(new GameModeSwitch(getContext()));
 
+        mRefreshRate90Forced = (TwoStatePreference) findPreference("refresh_rate_90Forced");
+        mRefreshRate90Forced.setChecked(prefs.getBoolean("refresh_rate_90Forced", false));
+        mRefreshRate90Forced.setOnPreferenceChangeListener(new RefreshRateSwitch(getContext()));
+
         mRefreshRate90 = (RadioButtonPreference) findPreference("refresh_rate_90");
         mRefreshRate90.setChecked(RefreshRateSwitch.isCurrentlyEnabled(this.getContext()));
         mRefreshRate90.setOnPreferenceChangeListener(new RefreshRateSwitch(getContext()));
@@ -111,6 +116,14 @@ public class DeviceSettings extends PreferenceFragment
         mFpsInfo = (SwitchPreference) findPreference(KEY_FPS_INFO);
         mFpsInfo.setChecked(prefs.getBoolean(KEY_FPS_INFO, false));
         mFpsInfo.setOnPreferenceChangeListener(this);
+
+        // Few checks to enable/disable options when activity is launched
+        if ((prefs.getBoolean("refresh_rate_90", false) && prefs.getBoolean("refresh_rate_90Forced", false))) {
+            mRefreshRate60.setEnabled(false);
+            mRefreshRate90.setEnabled(false);
+        }  else if ((prefs.getBoolean("refresh_rate_60", false))) {
+            mRefreshRate90Forced.setEnabled(false);
+        }
     }
 
     @Override
@@ -118,12 +131,14 @@ public class DeviceSettings extends PreferenceFragment
        if(preference == mRefreshRate90) {
                 mRefreshRate60.setChecked(false);
                 mRefreshRate90.setChecked(true);
+                mRefreshRate90Forced.setEnabled(true);
                 return true;
-            } else if (preference == mRefreshRate60) {
+        } else if (preference == mRefreshRate60) {
                 mRefreshRate60.setChecked(true);
                 mRefreshRate90.setChecked(false);
+                mRefreshRate90Forced.setEnabled(false);
                 return true;
-            }
+        }
             return super.onPreferenceTreeClick(preference);
     }
 

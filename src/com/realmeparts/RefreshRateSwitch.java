@@ -19,16 +19,25 @@ package com.realmeparts;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Parcel;
+import android.os.RemoteException;
+import android.os.ServiceManager;
+import android.os.IBinder;
 import android.provider.Settings;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.PreferenceManager;
+import android.util.Log;
 
 import com.realmeparts.DeviceSettings;
 
 public class RefreshRateSwitch implements OnPreferenceChangeListener {
 
     private Context mContext;
+
+    public static int setRefreshRate;
+
+    private static final IBinder SF = ServiceManager.getService("SurfaceFlinger");
 
     public RefreshRateSwitch(Context context) {
         mContext = context;
@@ -49,7 +58,22 @@ public class RefreshRateSwitch implements OnPreferenceChangeListener {
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         Boolean enabled = (Boolean) newValue;
-        switch ((preference == DeviceSettings.mRefreshRate90 && enabled) ? 1 : 0) {
+
+        if (preference == DeviceSettings.mRefreshRate90 && enabled) {
+            setRefreshRate = 1;
+        } else if (preference == DeviceSettings.mRefreshRate60 && enabled) {
+            setRefreshRate = 0;
+        } else if (preference == DeviceSettings.mRefreshRate90Forced && enabled){
+            DeviceSettings.mRefreshRate60.setEnabled(false);
+            DeviceSettings.mRefreshRate90.setEnabled(false);
+            setRefreshRate = 2;
+        } else if (preference == DeviceSettings.mRefreshRate90Forced && !enabled) {
+            DeviceSettings.mRefreshRate60.setEnabled(true);
+            DeviceSettings.mRefreshRate90.setEnabled(true);
+            setRefreshRate = 3;
+        }
+
+        switch (setRefreshRate) {
             case 1:
             Settings.System.putFloat(mContext.getContentResolver(),
                 Settings.System.PEAK_REFRESH_RATE, 90f);
@@ -62,7 +86,26 @@ public class RefreshRateSwitch implements OnPreferenceChangeListener {
             Settings.System.putFloat(mContext.getContentResolver(),
                 Settings.System.MIN_REFRESH_RATE, 60f);
             break;
+            case 2:
+            setForcedRefreshRate(0);
+            break;
+            case 3:
+            setForcedRefreshRate(-1);
+            break;
         }
         return true;
+    }
+
+    public void setForcedRefreshRate(int value) {
+        Parcel Info = Parcel.obtain();
+        Info.writeInterfaceToken("android.ui.ISurfaceComposer");
+        Info.writeInt(value);
+        try {
+            SF.transact(1035, Info, null, 0);
+        } catch (RemoteException e) {
+            Log.e("DeviceSettings", e.toString());
+        } finally {
+            Info.recycle();
+        }
     }
 }
