@@ -62,6 +62,10 @@ public class Startup extends BroadcastReceiver {
         if (enabled) {
             context.startService(new Intent(context, FPSInfoService.class));
         }
+        enabled = sharedPrefs.getBoolean("refresh_rate_90Forced", false);
+        if (enabled) {
+            RefreshRateSwitch.setForcedRefreshRate(0);
+        }
     }
 
     private boolean hasRestoredTunable(Context context) {

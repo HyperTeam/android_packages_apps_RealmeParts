@@ -96,7 +96,7 @@ public class RefreshRateSwitch implements OnPreferenceChangeListener {
         return true;
     }
 
-    public void setForcedRefreshRate(int value) {
+    public static void setForcedRefreshRate(int value) {
         Parcel Info = Parcel.obtain();
         Info.writeInterfaceToken("android.ui.ISurfaceComposer");
         Info.writeInt(value);
