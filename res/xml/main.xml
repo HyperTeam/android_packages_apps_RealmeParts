@@ -12,6 +12,28 @@
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
+        android:key="charging"
+        android:title="@string/smart_charging_main_title">
+
+        <SwitchPreference
+            android:key="smart_charging"
+            android:icon="@drawable/ic_charging_main"
+            android:summary="@string/smart_charging_summary"
+            android:title="@string/smart_charging_title" />
+        
+        <com.realmeparts.SeekBarPreference
+            android:key="seek_bar"
+            android:title="Select charging limit"
+            android:layout="@layout/preference_slider"
+            android:defaultValue="95"
+            android:max="100"
+            android:min="80"
+            android:layout_gravity="center_vertical"
+            android:layout_width="match_parent"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="graphics"
         android:title="@string/display_title">
 
