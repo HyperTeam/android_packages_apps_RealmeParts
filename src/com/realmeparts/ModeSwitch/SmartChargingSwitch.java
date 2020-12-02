@@ -26,6 +26,7 @@ import android.content.SharedPreferences;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.PreferenceManager;
+import android.os.UserHandle;
 import android.util.Log;
 
 import com.realmeparts.DeviceSettings;
@@ -60,12 +61,14 @@ public class SmartChargingSwitch implements OnPreferenceChangeListener {
         Boolean enabled = (Boolean) newValue;
         Intent SmartChargingSVC = new Intent(mContext, com.realmeparts.SmartChargingService.class);
         if (enabled) {
-            mContext.startService(SmartChargingSVC);
+            mContext.startServiceAsUser(SmartChargingSVC, UserHandle.CURRENT);
             DeviceSettings.mSeekBarPreference.setEnabled(true);
+            DeviceSettings.mResetStats.setEnabled(true);
             Log.d("DeviceSettings", "Starting SmartChargingSVC");
         } else {
-            mContext.stopService(SmartChargingSVC);
+            mContext.stopServiceAsUser(SmartChargingSVC, UserHandle.CURRENT);
             DeviceSettings.mSeekBarPreference.setEnabled(false);
+            DeviceSettings.mResetStats.setEnabled(false);
             Utils.writeValue(FILE, "1");
             Log.d("DeviceSettings", "Stopping SmartChargingSVC");
         }
