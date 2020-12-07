@@ -64,11 +64,13 @@ public class SmartChargingSwitch implements OnPreferenceChangeListener {
             mContext.startServiceAsUser(SmartChargingSVC, UserHandle.CURRENT);
             DeviceSettings.mSeekBarPreference.setEnabled(true);
             DeviceSettings.mResetStats.setEnabled(true);
+            DeviceSettings.mChargingSpeed.setEnabled(true);
             Log.d("DeviceSettings", "Starting SmartChargingSVC");
         } else {
             mContext.stopServiceAsUser(SmartChargingSVC, UserHandle.CURRENT);
             DeviceSettings.mSeekBarPreference.setEnabled(false);
             DeviceSettings.mResetStats.setEnabled(false);
+            DeviceSettings.mChargingSpeed.setEnabled(false);
             Utils.writeValue(FILE, "1");
             Log.d("DeviceSettings", "Stopping SmartChargingSVC");
         }

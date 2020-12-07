@@ -21,6 +21,16 @@
             android:summary="@string/smart_charging_summary"
             android:title="@string/smart_charging_title" />
         
+        <com.realmeparts.SecureSettingListPreference
+            android:key="charging_speed"
+            android:icon="@drawable/ic_charging_speed"
+            android:title="Charging Speed"
+            android:dialogTitle="Select Charging Speed"
+            android:entries="@array/charging_speed_entries"
+            android:entryValues="@array/charging_speed_values"
+            android:defaultValue="0"
+            android:summary="%s" />
+
         <com.realmeparts.SeekBarPreference
             android:key="seek_bar"
             android:title="Select charging limit"
@@ -36,7 +46,6 @@
             android:icon="@drawable/ic_info_outline_24dp"
             android:title="@string/reset_stats_title"
             android:summary="@string/reset_stats_summary" />
-
     </PreferenceCategory>
 
     <PreferenceCategory

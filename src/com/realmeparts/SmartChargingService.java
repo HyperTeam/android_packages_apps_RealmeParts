@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.provider.Settings;
 import android.os.BatteryManager;
 import android.os.Handler;
 import android.os.IBinder;
@@ -43,6 +44,8 @@ public class SmartChargingService extends Service {
     private static boolean resetBatteryStats = false;
 
     public static String cool_down = "/sys/class/power_supply/battery/cool_down";
+
+    public static String current = "/sys/class/power_supply/battery/current_now";
 
     public static String mmi_charging_enable = "/sys/class/power_supply/battery/mmi_charging_enable";
 
@@ -86,7 +89,7 @@ public class SmartChargingService extends Service {
                 }
             Log.d("DeviceSettings", "Charger/USB Connected");
             } else if (intent.getAction() == Intent.ACTION_POWER_DISCONNECTED) {
-            if(sharedPreferences.getBoolean("reset_stats", false) && SeekBarPreference.getProgress() == battCap) resetStats();
+            if(sharedPreferences.getBoolean("reset_stats", false) && sharedPreferences.getInt("seek_bar", 95) == battCap) resetStats();
                 if (mconnectionInfoReceiver) {
                     context.getApplicationContext().unregisterReceiver(mBatteryInfo);
                     mconnectionInfoReceiver = false;
@@ -102,26 +105,38 @@ public class SmartChargingService extends Service {
             float battTemp = ((float) Integer.parseInt(Utils.readLine(battery_temperature))) / 10;
             int battCap = Integer.parseInt(Utils.readLine(battery_capacity));
             int coolDown = Integer.parseInt(Utils.readLine(cool_down));
+            int currentmA = -(Integer.parseInt(Utils.readLine(current)));
             int chargingLimit = Integer.parseInt(Utils.readLine(mmi_charging_enable));
-            if (Debug) Log.d("DeviceSettings", "Battery Temperature: " + battTemp + ", Battery Capacity: " +battCap +"%" );
+            int userSelectedChargingLimit = sharedPreferences.getInt("seek_bar", 95);
+            int chargingSpeed = Settings.Secure.getInt(context.getContentResolver(), "charging_speed", 0);
 
-            // Cool Down based on battery temperature
-            if (battTemp >= 39.5 && coolDown != 2 && coolDown == 0) {
-                Utils.writeValue(cool_down, "2");
-                Log.d("DeviceSettings", "Battery Temperature: " + battTemp + "\n" + "Battery Capacity: " +battCap +"%" + "\n" + "Applied cool down");
-            } 
-            else if (battTemp <= 38.5 && coolDown != 0 && coolDown == 2) {
-                Utils.writeValue(cool_down, "0");
-                Log.d("DeviceSettings", "Battery Temperature: " + battTemp + "\n" + "Battery Capacity: " +battCap +"%" + "\n" + "No cool down applied");
-            }
+            Log.d("DeviceSettings", "Battery Temperature: "+battTemp+", Battery Capacity: "+battCap+"%, "+"\n"+"Charging Speed: "+currentmA+" mA, "+"Cool Down: "+coolDown);
 
-            // Charging limit based on user selected battery percentage 
-            if (((SeekBarPreference.getProgress() == battCap) || (SeekBarPreference.getProgress() < battCap)) && chargingLimit != 0) {
+            if (chargingLimit == 1) {
+                // Setting cool down values based on user selected charging speed
+                if (chargingSpeed != 0 && coolDown != chargingSpeed) {
+                    Utils.writeValue(cool_down, String.valueOf(chargingSpeed));
+                    Log.d("DeviceSettings", "Battery Temperature: "+battTemp+"\n"+"Battery Capacity: "+battCap+"%"+"\n");
+                } else if (chargingSpeed == 0){
+                    // Setting cool down values based on battery temperature
+                    if (battTemp >= 39.5 && coolDown != 2 && coolDown == 0) {
+                    Utils.writeValue(cool_down, "2");
+                    Log.d("DeviceSettings","Battery Temperature: "+battTemp+"\n"+"Battery Capacity: "+battCap +"%"+"\n"+"Applied cool down");
+                    }
+                    else if (battTemp <= 38.5 && coolDown != 0 && coolDown == 2) {
+                    Utils.writeValue(cool_down, "0");
+                    Log.d("DeviceSettings","Battery Temperature: "+battTemp+"\n"+"Battery Capacity: "+battCap +"%"+"\n"+"No cool down applied");
+                    }
+                }
+            } else Log.d("DeviceSettings","Battery Capacity: "+battCap+"%, "+"User selected charging limit: "+userSelectedChargingLimit+"%. Not Charging");
+
+            // Charging limit based on user selected battery percentage
+            if (((userSelectedChargingLimit == battCap) || (userSelectedChargingLimit < battCap)) && chargingLimit != 0) {
                 Utils.writeValue(cool_down, "0");
                 Utils.writeValue(mmi_charging_enable, "0");
-                Log.d("DeviceSettings", "Battery Temperature: " + battTemp + ", Battery Capacity: " +battCap+"%, " +"User selected charging limit: "+SeekBarPreference.getProgress()+"% . Stopped charging");
+                Log.d("DeviceSettings", "Battery Temperature: "+battTemp+", Battery Capacity: "+battCap+"%, " +"User selected charging limit: "+userSelectedChargingLimit+"%. Stopped charging");
             }
-            else if (SeekBarPreference.getProgress() > battCap && chargingLimit != 1) {
+            else if (userSelectedChargingLimit > battCap && chargingLimit != 1) {
                 Utils.writeValue(mmi_charging_enable, "1");
                 Log.d("DeviceSettings", "Charging...");
             }
