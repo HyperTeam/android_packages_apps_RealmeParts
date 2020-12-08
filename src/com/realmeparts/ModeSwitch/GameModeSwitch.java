@@ -17,11 +17,15 @@
 */
 package com.realmeparts;
 
+import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.NotificationChannel;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.SystemProperties;
+import androidx.core.app.NotificationCompat;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.PreferenceManager;
@@ -36,6 +40,10 @@ public class GameModeSwitch implements OnPreferenceChangeListener {
     private static Context mContext;
     private static NotificationManager mNotificationManager;
     private static int userSelectedDndMode;
+    private static NotificationChannel mNotificationChannel;
+    private static final int Notification_Channel_ID = 0x11011;
+    private static NotificationCompat.Builder notificationBuilder;
+    private static Notification notification;
 
     public GameModeSwitch(Context context) {
         mContext = context;
@@ -73,16 +81,20 @@ public class GameModeSwitch implements OnPreferenceChangeListener {
     }
 
     public static void GameModeDND() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+
         if (!checkNotificationPolicy(mContext)) {
             //Launch Do Not Disturb Access settings
             Intent DNDAccess = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
             mContext.startActivity(DNDAccess);
         } else if (isCurrentlyEnabled(mContext)) {
 	    userSelectedDndMode = mContext.getSystemService(NotificationManager.class).getCurrentInterruptionFilter();
-            activateDND();
+            if (sharedPreferences.getBoolean("dnd", false)) activateDND();
+            triggerNotification(mContext);
             ShowToast();
         } else if (!isCurrentlyEnabled(mContext)) {
-            mNotificationManager.setInterruptionFilter(userSelectedDndMode);
+            if (sharedPreferences.getBoolean("dnd", false)) mNotificationManager.setInterruptionFilter(userSelectedDndMode);
+            mNotificationManager.cancel(Notification_Channel_ID);
             ShowToast();
         }
     }
@@ -98,5 +110,24 @@ public class GameModeSwitch implements OnPreferenceChangeListener {
             Toast.makeText(mContext, "GameMode is activated. ", Toast.LENGTH_SHORT).show();
         } else
             Toast.makeText(mContext, "GameMode is deactivated. ", Toast.LENGTH_SHORT).show();
+    }
+
+    public static void triggerNotification(Context context) {
+        final String Notification_Channel_Name = context.getString(R.string.game_mode_title);
+        mNotificationChannel = new NotificationChannel(Notification_Channel_Name, Notification_Channel_Name, NotificationManager.IMPORTANCE_DEFAULT);
+        mNotificationManager.createNotificationChannel(mNotificationChannel);
+        notificationBuilder = new NotificationCompat.Builder(context.getApplicationContext())
+                                        .setSmallIcon(R.drawable.ic_settings_device)
+                                        .setContentTitle(Notification_Channel_Name)
+                                        .setContentText(context.getString(R.string.game_mode_notif_content))
+                                        .setOngoing(true)
+                                        .setChannelId(Notification_Channel_Name);
+        Intent intent = new Intent(context, DeviceSettingsActivity.class);
+        final PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        notificationBuilder.setContentIntent(pendingIntent);
+
+        Notification notification = notificationBuilder.build();
+        notification.flags |= Notification.FLAG_NO_CLEAR;
+        mNotificationManager.notify(Notification_Channel_ID, notification);
     }
 }

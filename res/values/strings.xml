@@ -35,11 +35,12 @@
     <string name="otg_mode_title">Enable USB-OTG</string>
     <string name="tile_otg_mode">Enable USB-OTG</string>
     <!-- game mode -->
-    <string name="game_mode_summary">Boost Touch Sampling Rate, enables performance mode and also enables DND mode for uninterrupted game play</string>
-    <string name="game_mode_title">Game mode</string>
-    <string name="tile_game_mode">Game mode</string>
-    <string name="game_mode_warning">Using game mode will impact battery life significantly</string>
-
+    <string name="game_mode_summary">Boost Touch Sampling Rate, enables performance mode.\nUsing game mode will impact battery life significantly</string>
+    <string name="game_mode_title">Game Mode</string>
+    <string name="tile_game_mode">Game Mode</string>
+    <string name="dnd_title">Do Not Disturb</string>
+    <string name="dnd_summary">DND will be activated if Game Mode is enabled</string>
+    <string name="game_mode_notif_content">Game Mode is activated</string>
     <!-- Refresh rate -->
     <string name="refresh_title">Screen Refresh rate</string>
     <string name="tile_refresh_rate">Refresh rate</string>
@@ -49,7 +50,6 @@
     <string name="refresh_rate_90_summary">Maximum smoothness with higher refresh rate but Apps&#47;Games can still limit to 60 FPS</string>
     <string name="refresh_rate_90Forced_title">Smooth Display</string>
     <string name="refresh_rate_90Forced_summary">Force display to 90Hz which improves touch responsiveness &amp; animation quality. Increases battery usage. </string>
-
     <!-- fps info -->
     <string name="fps_info_title">FPS overlay</string>
     <string name="fps_info_summary">Show overlay with current frames per second</string>
