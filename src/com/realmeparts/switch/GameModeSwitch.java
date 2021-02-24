@@ -117,7 +117,7 @@ public class GameModeSwitch implements OnPreferenceChangeListener {
         mNotificationChannel = new NotificationChannel(Notification_Channel_Name, Notification_Channel_Name, NotificationManager.IMPORTANCE_DEFAULT);
         mNotificationManager.createNotificationChannel(mNotificationChannel);
         notificationBuilder = new NotificationCompat.Builder(context.getApplicationContext())
-                                        .setSmallIcon(R.drawable.ic_settings_device)
+                                        .setSmallIcon(R.drawable.ic_homepage_settings)
                                         .setContentTitle(Notification_Channel_Name)
                                         .setContentText(context.getString(R.string.game_mode_notif_content))
                                         .setOngoing(true)
