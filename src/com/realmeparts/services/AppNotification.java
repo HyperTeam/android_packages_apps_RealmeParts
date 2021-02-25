@@ -31,6 +31,8 @@ public class AppNotification {
     private static NotificationCompat.Builder notificationBuilder;
     private static Notification notification;
 
+    public static boolean NotificationSent;
+
     public static void Send(Context context, int Notification_Channel_ID, String Notification_Channel_Name, String Notification_Content_Text) {
         mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationChannel = new NotificationChannel(Notification_Channel_Name, Notification_Channel_Name, NotificationManager.IMPORTANCE_DEFAULT);
@@ -48,10 +50,12 @@ public class AppNotification {
         Notification notification = notificationBuilder.build();
         notification.flags |= Notification.FLAG_NO_CLEAR;
         mNotificationManager.notify(Notification_Channel_ID, notification);
+        NotificationSent = true;
     }
 
     public static void Cancel(Context context, int Notification_Channel_ID) {
         mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.cancel(Notification_Channel_ID);
+        NotificationSent = false;
     }
 }

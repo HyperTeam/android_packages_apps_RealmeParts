@@ -22,6 +22,8 @@
     <string name="smart_charging_summary">Helps in cooling down &amp; also protects from over charging the device</string>
     <string name="reset_stats_title">Reset battery stats</string>
     <string name="reset_stats_summary">Battery stats will get reset when charging limit is reached</string>
+    <string name="smart_charging_status_notif">Smart Charging is running</string>
+    <string name="smart_charging_stoppped_notif">Charging limit is reached, stopped charging</string>
     <!-- DC dimming -->
     <string name="dc_mode_summary">Reduces screen flicker while brightness is low</string>
     <string name="dc_mode_title">DC-Dimming</string>
