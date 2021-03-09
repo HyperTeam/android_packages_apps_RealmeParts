@@ -30,7 +30,7 @@ import androidx.preference.PreferenceManager;
 
 import static android.provider.Settings.Secure.DOZE_ENABLED;
 
-public final class Utils {
+public final class DozeUtils {
 
     protected static final String WAKE_ON_GESTURE_KEY = "wake_on_gesture";
     protected static final String CATEG_PROX_SENSOR = "proximity_sensor";
