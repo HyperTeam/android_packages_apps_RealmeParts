@@ -26,9 +26,12 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.display.DisplayManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.Display;
+import android.view.Display.Mode;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -49,6 +52,8 @@ import com.realmeparts.RadioButtonPreference;
 import com.realmeparts.SeekBarPreference;
 import com.realmeparts.SecureSettingListPreference;
 
+import java.text.DecimalFormat;
+
 public class DeviceSettings extends PreferenceFragment
         implements Preference.OnPreferenceChangeListener {
 
@@ -63,7 +68,7 @@ public class DeviceSettings extends PreferenceFragment
     public static final String KEY_RESET_STATS = "reset_stats";
     public static final String KEY_DND_SWITCH = "dnd";
 
-    private static final String KEY_CATEGORY_REFRESH = "refresh";
+    private static final String KEY_CATEGORY_REFRESH_RATE = "refresh_rate";
 
     public static final String KEY_FPS_INFO = "fps_info";
 
@@ -90,6 +95,8 @@ public class DeviceSettings extends PreferenceFragment
     public static SeekBarPreference mSeekBarPreference;
     
     public static PreferenceCategory mPreferenceCategory;
+
+    public static DisplayManager mDisplayManager;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -163,6 +170,7 @@ public class DeviceSettings extends PreferenceFragment
         }
 
         isCoolDownAvailable();
+        DisplayRefreshRateModes();
     }
 
     @Override
@@ -215,6 +223,23 @@ public class DeviceSettings extends PreferenceFragment
     private void isCoolDownAvailable() {
         if (!Utils.fileWritable(SmartChargingService.cool_down)) {
             mPreferenceCategory = (PreferenceCategory) findPreference(KEY_CATEGORY_CHARGING);
+            getPreferenceScreen().removePreference(mPreferenceCategory);
+        }
+    }
+
+    // Remove display refresh rate modes category if display doesn't support 90hz
+    private void DisplayRefreshRateModes() {
+        String refreshRate = new String();
+        mDisplayManager = (DisplayManager) this.getContext().getSystemService(Context.DISPLAY_SERVICE);
+        Display.Mode[] DisplayModes = mDisplayManager.getDisplay(Display.DEFAULT_DISPLAY).getSupportedModes();
+        for (Display.Mode mDisplayMode : DisplayModes) {
+            DecimalFormat df = new DecimalFormat("0.##");
+            refreshRate += String.valueOf(df.format(mDisplayMode.getRefreshRate()))+"Hz, ";
+        }
+        Log.d("DeviceSettings", "Device supports "+refreshRate+"refresh rate modes");
+
+        if(!refreshRate.contains("90")) {
+            mPreferenceCategory = (PreferenceCategory) findPreference(KEY_CATEGORY_REFRESH_RATE);
             getPreferenceScreen().removePreference(mPreferenceCategory);
         }
     }

@@ -88,7 +88,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="refresh"
+        android:key="refresh_rate"
         android:title="@string/refresh_title">
 
         <com.realmeparts.RadioButtonPreference

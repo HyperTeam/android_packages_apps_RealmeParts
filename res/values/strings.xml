@@ -44,8 +44,8 @@
     <string name="dnd_summary">DND will be activated if Game Mode is enabled</string>
     <string name="game_mode_notif_content">Game Mode is activated</string>
     <!-- Refresh rate -->
-    <string name="refresh_title">Screen Refresh rate</string>
-    <string name="tile_refresh_rate">Refresh rate</string>
+    <string name="refresh_title">Screen Refresh Rate</string>
+    <string name="tile_refresh_rate">Refresh Rate</string>
     <string name="refresh_rate_60_title">60Hz</string>
     <string name="refresh_rate_60_summary">Less smoothness but slightly extended battery life</string>
     <string name="refresh_rate_90_title">90Hz</string>
