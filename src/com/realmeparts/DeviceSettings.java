@@ -35,6 +35,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.util.Log;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragment;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
@@ -51,6 +52,7 @@ import com.realmeparts.SecureSettingListPreference;
 public class DeviceSettings extends PreferenceFragment
         implements Preference.OnPreferenceChangeListener {
 
+    private static final String KEY_CATEGORY_CHARGING = "charging";
     private static final String KEY_CATEGORY_GRAPHICS = "graphics";
     public static final String KEY_SRGB_SWITCH = "srgb";
     public static final String KEY_DC_SWITCH = "dc";
@@ -86,6 +88,8 @@ public class DeviceSettings extends PreferenceFragment
     public static RadioButtonPreference mRefreshRate60;
 
     public static SeekBarPreference mSeekBarPreference;
+    
+    public static PreferenceCategory mPreferenceCategory;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -157,6 +161,8 @@ public class DeviceSettings extends PreferenceFragment
         }  else if ((prefs.getBoolean("refresh_rate_60", false))) {
             mRefreshRate90Forced.setEnabled(false);
         }
+
+        isCoolDownAvailable();
     }
 
     @Override
@@ -203,5 +209,13 @@ public class DeviceSettings extends PreferenceFragment
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // Remove Smart Charging preference category if cool_down node is unavailable
+    private void isCoolDownAvailable() {
+        if (!Utils.fileWritable(SmartChargingService.cool_down)) {
+            mPreferenceCategory = (PreferenceCategory) findPreference(KEY_CATEGORY_CHARGING);
+            getPreferenceScreen().removePreference(mPreferenceCategory);
+        }
     }
 }
