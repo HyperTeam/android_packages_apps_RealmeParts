@@ -16,8 +16,10 @@
 >USB-OTG
 
 > FPS Overlay
-### DC-Dimming
-### sRGB Mode
+### DC-Dimming & sRGB Mode
+>Currently DC-Dim & sRGB is restricted to realme X2 & X2 Pro since there is no proper way to confirm which realme device has DC-Dim & sRGB for real, so we have added device based checks for it. Check https://github.com/HyperTeam/packages_apps_RealmeParts/blob/master/res/raw/realmeParts_features.json
+to know which devices support these both features. You can always send pull request or even open issue if you would like to have these in your devices.  
+
 ## Setting up Realme Parts
 
     git clone https://github.com/HyperTeam/packages_apps_RealmeParts.git packages/apps/RealmeParts
