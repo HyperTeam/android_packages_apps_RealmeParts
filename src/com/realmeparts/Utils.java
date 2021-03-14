@@ -18,6 +18,7 @@
 package com.realmeparts;
 
 import android.content.res.Resources;
+import android.os.SystemProperties;
 import android.util.Log;
 
 import java.io.File;
@@ -67,6 +68,70 @@ public class Utils {
 
     public static boolean fileWritable(String filename) {
         return fileExists(filename) && new File(filename).canWrite();
+    }
+
+    static void setValue(String path, int value) {
+        if (fileWritable(path)) {
+            if (path == null) {
+                return;
+            }
+            try {
+                FileOutputStream fos = new FileOutputStream(new File(path));
+                fos.write(Integer.toString(value).getBytes());
+                fos.flush();
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    static void setValue(String path, boolean value) {
+        if (fileWritable(path)) {
+            if (path == null) {
+                return;
+            }
+            try {
+                FileOutputStream fos = new FileOutputStream(new File(path));
+                fos.write((value ? "1" : "0").getBytes());
+                fos.flush();
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    static void setValue(String path, double value) {
+        if (fileWritable(path)) {
+            if (path == null) {
+                return;
+            }
+            try {
+                FileOutputStream fos = new FileOutputStream(new File(path));
+                fos.write(Long.toString(Math.round(value)).getBytes());
+                fos.flush();
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    static void setValue(String path, String value) {
+        if (fileWritable(path)) {
+            if (path == null) {
+                return;
+            }
+            try {
+                FileOutputStream fos = new FileOutputStream(new File(path));
+                fos.write(value.getBytes());
+                fos.flush();
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static String readLine(String filename) {
@@ -140,5 +205,21 @@ public class Utils {
         } catch (IOException e) {
             return null;
         }
+    }
+
+    static void setStringProp(String prop, String value) {
+        SystemProperties.set(prop, value);
+    }
+
+    static String getStringProp(String prop, String defaultValue) {
+        return SystemProperties.get(prop, defaultValue);
+    }
+
+    static void setintProp(String prop, int value) {
+        SystemProperties.set(prop, String.valueOf(value));
+    }
+
+    static int getintProp(String prop, int defaultValue) {
+        return SystemProperties.getInt(prop, defaultValue);
     }
 }

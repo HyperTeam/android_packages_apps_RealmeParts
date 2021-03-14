@@ -16,6 +16,13 @@
     <string name="display_title">Display</string>
     <string name="misc_title">Misc settings</string>
 
+    <!-- CABC -->
+    <string name="cabc_title">CABC Mode</string>
+    <string name="cabc_dialogTitle">CABC Profiles</string>
+    <string name="cabc_off">Off</string>
+    <string name="cabc_normal">On</string>
+    <string name="cabc_balanced">Balanced Mode</string>
+    <string name="cabc_aggressive">Super power saving mode</string>
     <!-- Charging -->
     <string name="smart_charging_main_title">Battery</string>
     <string name="smart_charging_title">Smart Charging</string>

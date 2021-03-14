@@ -20,6 +20,9 @@
 >Currently DC-Dim & sRGB is restricted to realme X2 & X2 Pro since there is no proper way to confirm which realme device has DC-Dim & sRGB for real, so we have added device based checks for it. Check https://github.com/HyperTeam/packages_apps_RealmeParts/blob/master/res/raw/realmeParts_features.json
 to know which devices support these both features. You can always send pull request or even open issue if you would like to have these in your devices.  
 
+### CABC Mode
+>https://twitter.com/realmeIndia/status/1120227947573665792 (Enabled for realme 3 Pro & 5 Pro, copy cabc init script)
+
 ## Setting up Realme Parts
 
     git clone https://github.com/HyperTeam/packages_apps_RealmeParts.git packages/apps/RealmeParts
@@ -27,6 +30,8 @@ to know which devices support these both features. You can always send pull requ
 ```
 # Parts
 $(call inherit-product, packages/apps/RealmeParts/parts.mk)
+PRODUCT_COPY_FILES += \
+    packages/apps/RealmeParts/init/cabc.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/cabc.rc
 ```
 ## Overview
 <img align="left" width="400" height="800" src="/RealmeParts.gif">

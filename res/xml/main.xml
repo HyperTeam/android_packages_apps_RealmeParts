@@ -52,6 +52,15 @@
         android:key="graphics"
         android:title="@string/display_title">
 
+        <com.realmeparts.SecureSettingListPreference
+            android:icon="@drawable/ic_cabc"
+            android:key="cabc"
+            android:dialogTitle="@string/cabc_dialogTitle"
+            android:entries="@array/cabc_profiles"
+            android:entryValues="@array/cabc_values"
+            android:defaultValue="0"
+            android:title="@string/cabc_title" />
+
         <SwitchPreference
             android:icon="@drawable/dc_mode_icon"
             android:key="dc"

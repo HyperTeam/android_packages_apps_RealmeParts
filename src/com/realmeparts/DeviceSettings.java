@@ -74,6 +74,9 @@ public class DeviceSettings extends PreferenceFragment
     public static final String KEY_RESET_STATS = "reset_stats";
     public static final String KEY_DND_SWITCH = "dnd";
 
+    public static final String KEY_CABC = "cabc";
+    public static final String CABC_SYSTEM_PROPERTY = "persist.cabc_profile";
+
     private static final String KEY_CATEGORY_REFRESH_RATE = "refresh_rate";
 
     public static final String KEY_FPS_INFO = "fps_info";
@@ -83,6 +86,7 @@ public class DeviceSettings extends PreferenceFragment
     public static final String TP_LIMIT_ENABLE = "/proc/touchpanel/oppo_tp_limit_enable";
     public static final String TP_DIRECTION = "/proc/touchpanel/oppo_tp_direction";
 
+    private boolean CABC_DeviceMatched;
     private boolean DC_DeviceMatched;
     private boolean sRGB_DeviceMatched;
 
@@ -93,6 +97,7 @@ public class DeviceSettings extends PreferenceFragment
     public static TwoStatePreference mDNDSwitch;
     private static TwoStatePreference mSmartChargingSwitch;
     public static SecureSettingListPreference mChargingSpeed;
+    private SecureSettingListPreference mCABC;
     public static TwoStatePreference mResetStats;
     public static TwoStatePreference mRefreshRate90Forced;
     private static SwitchPreference mFpsInfo;
@@ -102,7 +107,7 @@ public class DeviceSettings extends PreferenceFragment
     public static RadioButtonPreference mRefreshRate60;
 
     public static SeekBarPreference mSeekBarPreference;
-    
+
     public static PreferenceCategory mPreferenceCategory;
 
     public static DisplayManager mDisplayManager;
@@ -170,6 +175,11 @@ public class DeviceSettings extends PreferenceFragment
         mFpsInfo.setChecked(prefs.getBoolean(KEY_FPS_INFO, false));
         mFpsInfo.setOnPreferenceChangeListener(this);
 
+        mCABC = (SecureSettingListPreference) findPreference(KEY_CABC);
+        mCABC.setValue(Utils.getStringProp(CABC_SYSTEM_PROPERTY, "0"));
+        mCABC.setSummary(mCABC.getEntry());
+        mCABC.setOnPreferenceChangeListener(this);
+
         // Few checks to enable/disable options when activity is launched
         if ((prefs.getBoolean("refresh_rate_90", false) && prefs.getBoolean("refresh_rate_90Forced", false))) {
             mRefreshRate60.setEnabled(false);
@@ -219,6 +229,12 @@ public class DeviceSettings extends PreferenceFragment
             mChargingSpeed.setValue((String) newValue);
             mChargingSpeed.setSummary(mChargingSpeed.getEntry());
         }
+
+        if (preference == mCABC) {
+            mCABC.setValue((String) newValue);
+            mCABC.setSummary(mCABC.getEntry());
+            Utils.setStringProp(CABC_SYSTEM_PROPERTY, (String) newValue);
+        }
         return true;
     }
 
@@ -263,6 +279,16 @@ public class DeviceSettings extends PreferenceFragment
         String features_json = Utils.InputStreamToString(getResources().openRawResource(R.raw.realmeParts_features));
 
         JSONObject jsonOB = new JSONObject(features_json);
+
+        JSONArray CABC = jsonOB.getJSONArray(KEY_CABC);
+        for (int i = 0; i < CABC.length(); i++) {
+            if (CABC.getString(i).toUpperCase().contains(Build.PRODUCT)) {
+                {
+                    CABC_DeviceMatched = true;
+                }
+            }
+        }
+
         JSONArray DC = jsonOB.getJSONArray(KEY_DC_SWITCH);
         for (int i = 0; i < DC.length(); i++) {
             if (DC.getString(i).toUpperCase().contains(Build.PRODUCT)) {
@@ -279,6 +305,11 @@ public class DeviceSettings extends PreferenceFragment
                     sRGB_DeviceMatched = true;
                 }
             }
+        }
+
+        // Remove CABC preference if device is unsupported
+        if (!CABC_DeviceMatched) {
+            mPreferenceCategory.removePreference(findPreference(KEY_CABC));
         }
 
         // Remove DC-Dimming preference if device is unsupported
