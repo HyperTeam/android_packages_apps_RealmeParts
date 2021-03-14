@@ -23,6 +23,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -127,6 +128,17 @@ public class Utils {
             return defaultValue;
         } else {
             return res.getString(resId);
+        }
+    }
+
+    public static String InputStreamToString(InputStream inputStream) {
+        try {
+            byte[] bytes = new byte[inputStream.available()];
+            inputStream.read(bytes, 0, bytes.length);
+            String json = new String(bytes);
+            return json;
+        } catch (IOException e) {
+            return null;
         }
     }
 }

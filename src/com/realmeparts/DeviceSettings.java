@@ -27,6 +27,7 @@ import android.content.res.Resources;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.display.DisplayManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -52,7 +53,12 @@ import com.realmeparts.RadioButtonPreference;
 import com.realmeparts.SeekBarPreference;
 import com.realmeparts.SecureSettingListPreference;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class DeviceSettings extends PreferenceFragment
         implements Preference.OnPreferenceChangeListener {
@@ -76,6 +82,9 @@ public class DeviceSettings extends PreferenceFragment
 
     public static final String TP_LIMIT_ENABLE = "/proc/touchpanel/oppo_tp_limit_enable";
     public static final String TP_DIRECTION = "/proc/touchpanel/oppo_tp_direction";
+
+    private boolean DC_DeviceMatched;
+    private boolean sRGB_DeviceMatched;
 
     private static TwoStatePreference mDCModeSwitch;
     private static TwoStatePreference mSRGBModeSwitch;
@@ -171,6 +180,11 @@ public class DeviceSettings extends PreferenceFragment
 
         isCoolDownAvailable();
         DisplayRefreshRateModes();
+        try {
+            ParseJson();
+        } catch (Exception e) {
+            Log.d("DeviceSettings", e.toString());
+        }
     }
 
     @Override
@@ -241,6 +255,40 @@ public class DeviceSettings extends PreferenceFragment
         if(!refreshRate.contains("90")) {
             mPreferenceCategory = (PreferenceCategory) findPreference(KEY_CATEGORY_REFRESH_RATE);
             getPreferenceScreen().removePreference(mPreferenceCategory);
+        }
+    }
+
+    private void ParseJson() throws IOException, JSONException {
+        mPreferenceCategory = (PreferenceCategory) findPreference(KEY_CATEGORY_GRAPHICS);
+        String features_json = Utils.InputStreamToString(getResources().openRawResource(R.raw.realmeParts_features));
+
+        JSONObject jsonOB = new JSONObject(features_json);
+        JSONArray DC = jsonOB.getJSONArray(KEY_DC_SWITCH);
+        for (int i = 0; i < DC.length(); i++) {
+            if (DC.getString(i).toUpperCase().contains(Build.PRODUCT)) {
+                {
+                    DC_DeviceMatched = true;
+                }
+            }
+        }
+
+        JSONArray sRGB = jsonOB.getJSONArray(KEY_SRGB_SWITCH);
+        for (int i = 0; i < sRGB.length(); i++) {
+            if (sRGB.getString(i).toUpperCase().contains(Build.PRODUCT)) {
+                {
+                    sRGB_DeviceMatched = true;
+                }
+            }
+        }
+
+        // Remove DC-Dimming preference if device is unsupported
+        if (!DC_DeviceMatched) {
+            mPreferenceCategory.removePreference(findPreference(KEY_DC_SWITCH));
+        }
+
+        // Remove sRGB preference if device is unsupported
+        if (!sRGB_DeviceMatched) {
+            mPreferenceCategory.removePreference(findPreference(KEY_SRGB_SWITCH));
         }
     }
 }
