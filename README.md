@@ -23,6 +23,9 @@ to know which devices support these both features. You can always send pull requ
 ### CABC Mode
 >https://twitter.com/realmeIndia/status/1120227947573665792 (Enabled for realme 3 Pro & 5 Pro, copy cabc init script)
 
+### HBM Mode
+>High Brightness Mode for better visibility in outdoors
+
 ## Setting up Realme Parts
 
     git clone https://github.com/HyperTeam/packages_apps_RealmeParts.git packages/apps/RealmeParts

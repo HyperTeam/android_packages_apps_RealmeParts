@@ -105,6 +105,15 @@
             </intent-filter>
         </service>
         <service
+            android:name="com.realmeparts.HBMModeTileService"
+            android:label="@string/tile_hbm_mode"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action
+                    android:name="android.service.quicksettings.action.QS_TILE"/>
+            </intent-filter>
+        </service>
+        <service
             android:name="com.realmeparts.GameModeTileService"
             android:icon="@drawable/ic_game_tile"
             android:label="@string/tile_game_mode"

@@ -66,6 +66,7 @@ public class DeviceSettings extends PreferenceFragment
     private static final String KEY_CATEGORY_CHARGING = "charging";
     private static final String KEY_CATEGORY_GRAPHICS = "graphics";
     public static final String KEY_SRGB_SWITCH = "srgb";
+    public static final String KEY_HBM_SWITCH = "hbm";
     public static final String KEY_DC_SWITCH = "dc";
     public static final String KEY_OTG_SWITCH = "otg";
     public static final String KEY_GAME_SWITCH = "game";
@@ -88,10 +89,12 @@ public class DeviceSettings extends PreferenceFragment
 
     private boolean CABC_DeviceMatched;
     private boolean DC_DeviceMatched;
+    private boolean HBM_DeviceMatched;
     private boolean sRGB_DeviceMatched;
 
     private static TwoStatePreference mDCModeSwitch;
     private static TwoStatePreference mSRGBModeSwitch;
+    private static TwoStatePreference mHBMModeSwitch;
     private static TwoStatePreference mOTGModeSwitch;
     private static TwoStatePreference mGameModeSwitch;
     public static TwoStatePreference mDNDSwitch;
@@ -127,6 +130,11 @@ public class DeviceSettings extends PreferenceFragment
         mSRGBModeSwitch.setEnabled(SRGBModeSwitch.isSupported());
         mSRGBModeSwitch.setChecked(SRGBModeSwitch.isCurrentlyEnabled(this.getContext()));
         mSRGBModeSwitch.setOnPreferenceChangeListener(new SRGBModeSwitch());
+
+        mHBMModeSwitch = (TwoStatePreference) findPreference(KEY_HBM_SWITCH);
+        mHBMModeSwitch.setEnabled(HBMModeSwitch.isSupported());
+        mHBMModeSwitch.setChecked(HBMModeSwitch.isCurrentlyEnabled(this.getContext()));
+        mHBMModeSwitch.setOnPreferenceChangeListener(new HBMModeSwitch());
 
         mOTGModeSwitch = (TwoStatePreference) findPreference(KEY_OTG_SWITCH);
         mOTGModeSwitch.setEnabled(OTGModeSwitch.isSupported());
@@ -298,6 +306,15 @@ public class DeviceSettings extends PreferenceFragment
             }
         }
 
+        JSONArray HBM = jsonOB.getJSONArray(KEY_HBM_SWITCH);
+        for (int i = 0; i < HBM.length(); i++) {
+            if (HBM.getString(i).toUpperCase().contains(Build.PRODUCT)) {
+                {
+                    HBM_DeviceMatched = true;
+                }
+            }
+        }
+
         JSONArray sRGB = jsonOB.getJSONArray(KEY_SRGB_SWITCH);
         for (int i = 0; i < sRGB.length(); i++) {
             if (sRGB.getString(i).toUpperCase().contains(Build.PRODUCT)) {
@@ -315,6 +332,11 @@ public class DeviceSettings extends PreferenceFragment
         // Remove DC-Dimming preference if device is unsupported
         if (!DC_DeviceMatched) {
             mPreferenceCategory.removePreference(findPreference(KEY_DC_SWITCH));
+        }
+
+        // Remove HBM preference if device is unsupported
+        if (!HBM_DeviceMatched) {
+            mPreferenceCategory.removePreference(findPreference(KEY_HBM_SWITCH));
         }
 
         // Remove sRGB preference if device is unsupported
