@@ -161,6 +161,9 @@
         <service android:name="com.realmeparts.SmartChargingService"
                 android:exported="false">
         </service>
+        <service android:name="com.realmeparts.HBMService"
+                android:exported="false">
+        </service>
         <service android:name="com.realmeparts.doze.DozeService"
                 android:exported="false">
         </service>

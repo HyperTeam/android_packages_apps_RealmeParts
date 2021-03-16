@@ -19,7 +19,6 @@
 package com.realmeparts;
 
 import android.annotation.TargetApi;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
@@ -66,6 +65,7 @@ public class HBMModeTileService extends TileService {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         enabled = HBMModeSwitch.isCurrentlyEnabled(this);
         Utils.writeValue(HBMModeSwitch.getFile(), enabled ? "0" : "1");
+        HBMModeSwitch.TriggerService(!enabled);
         sharedPrefs.edit().putBoolean(DeviceSettings.KEY_HBM_SWITCH, enabled ? false : true).commit();
         //getQsTile().setLabel(enabled ? "HBM off" : "HBM On");
         getQsTile().setState(enabled ? Tile.STATE_INACTIVE : Tile.STATE_ACTIVE);

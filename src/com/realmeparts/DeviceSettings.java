@@ -134,7 +134,7 @@ public class DeviceSettings extends PreferenceFragment
         mHBMModeSwitch = (TwoStatePreference) findPreference(KEY_HBM_SWITCH);
         mHBMModeSwitch.setEnabled(HBMModeSwitch.isSupported());
         mHBMModeSwitch.setChecked(HBMModeSwitch.isCurrentlyEnabled(this.getContext()));
-        mHBMModeSwitch.setOnPreferenceChangeListener(new HBMModeSwitch());
+        mHBMModeSwitch.setOnPreferenceChangeListener(new HBMModeSwitch(getContext()));
 
         mOTGModeSwitch = (TwoStatePreference) findPreference(KEY_OTG_SWITCH);
         mOTGModeSwitch.setEnabled(OTGModeSwitch.isSupported());

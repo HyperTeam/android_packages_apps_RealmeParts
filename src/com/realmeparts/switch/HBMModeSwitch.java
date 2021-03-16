@@ -19,14 +19,24 @@
 package com.realmeparts;
 
 import android.content.Context;
+import android.content.IntentFilter;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.PreferenceManager;
+import android.os.UserHandle;
+import android.util.Log;
 
 import com.realmeparts.DeviceSettings;
 
 public class HBMModeSwitch implements OnPreferenceChangeListener {
+
+    private static Context mContext;
+
+    public HBMModeSwitch(Context context) {
+        mContext = context;
+    }
 
     private static final String FILE = "/sys/kernel/oppo_display/hbm";
 
@@ -49,6 +59,18 @@ public class HBMModeSwitch implements OnPreferenceChangeListener {
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         Boolean enabled = (Boolean) newValue;
         Utils.writeValue(getFile(), enabled ? "1" : "0");
+        TriggerService(enabled);
         return true;
+    }
+
+    public static void TriggerService(boolean enabled){
+        Intent HBMIntent = new Intent(mContext, com.realmeparts.HBMService.class);
+        if (enabled) {
+            mContext.startServiceAsUser(HBMIntent, UserHandle.CURRENT);
+            Log.d("DeviceSettings", "Starting HBM Service");
+        } else if (!enabled && HBMIntent != null) {
+            mContext.stopServiceAsUser(HBMIntent, UserHandle.CURRENT);
+            Log.d("DeviceSettings", "Stopping HBM Service");
+        }
     }
 }
