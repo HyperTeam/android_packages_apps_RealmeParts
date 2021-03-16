@@ -69,6 +69,7 @@
 
         <SwitchPreference
             android:key="hbm"
+            android:icon="@drawable/ic_hbm"
             android:summary="@string/hbm_mode_summary"
             android:title="@string/hbm_mode_title" />
 
