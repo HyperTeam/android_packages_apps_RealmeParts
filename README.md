@@ -23,11 +23,10 @@ to know which devices support these both features. You can always send pull requ
 ## Setting up Realme Parts
 
     git clone https://github.com/HyperTeam/packages_apps_RealmeParts.git packages/apps/RealmeParts
-### Build the package
+### Build the package or include parts makefile
 ```
 # Parts
-PRODUCT_PACKAGES += \
-	RealmeParts
+$(call inherit-product, packages/apps/RealmeParts/parts.mk)
 ```
 ## Overview
 <img align="left" width="400" height="800" src="/RealmeParts.gif">
