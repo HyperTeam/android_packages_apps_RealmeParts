@@ -66,4 +66,7 @@
     <!-- fps info -->
     <string name="fps_info_title">FPS overlay</string>
     <string name="fps_info_summary">Show overlay with current frames per second</string>
+
+    <!-- Unsupported -->
+    <string name="unsupported">Unsupported</string>
 </resources>

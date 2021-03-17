@@ -49,10 +49,15 @@ public class SRGBModeTileService extends TileService {
     public void onStartListening() {
         super.onStartListening();
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        enabled = SRGBModeSwitch.isCurrentlyEnabled(this);
-        getQsTile().setState(enabled ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
+        if (!sharedPrefs.getBoolean("sRGB_DeviceMatched", false)) {
+            getQsTile().setState(Tile.STATE_UNAVAILABLE);
+            getQsTile().setLabel(getResources().getString(R.string.unsupported));
+        } else {
+            enabled = SRGBModeSwitch.isCurrentlyEnabled(this);
+            getQsTile().setState(enabled ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
+            getQsTile().setLabel(getResources().getString(R.string.tile_srgb_mode));
+        }
         getQsTile().updateTile();
-
     }
 
     @Override

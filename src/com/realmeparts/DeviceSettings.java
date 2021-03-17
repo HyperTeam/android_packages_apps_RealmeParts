@@ -267,6 +267,7 @@ public class DeviceSettings extends PreferenceFragment
 
     // Remove display refresh rate modes category if display doesn't support 90hz
     private void DisplayRefreshRateModes() {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
         String refreshRate = new String();
         mDisplayManager = (DisplayManager) this.getContext().getSystemService(Context.DISPLAY_SERVICE);
         Display.Mode[] DisplayModes = mDisplayManager.getDisplay(Display.DEFAULT_DISPLAY).getSupportedModes();
@@ -277,15 +278,16 @@ public class DeviceSettings extends PreferenceFragment
         Log.d("DeviceSettings", "Device supports "+refreshRate+"refresh rate modes");
 
         if(!refreshRate.contains("90")) {
+            prefs.edit().putBoolean("refresh_rate_90_device", false).commit();
             mPreferenceCategory = (PreferenceCategory) findPreference(KEY_CATEGORY_REFRESH_RATE);
             getPreferenceScreen().removePreference(mPreferenceCategory);
-        }
+        } else prefs.edit().putBoolean("refresh_rate_90_device", true).commit();
     }
 
     private void ParseJson() throws IOException, JSONException {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
         mPreferenceCategory = (PreferenceCategory) findPreference(KEY_CATEGORY_GRAPHICS);
         String features_json = Utils.InputStreamToString(getResources().openRawResource(R.raw.realmeParts_features));
-
         JSONObject jsonOB = new JSONObject(features_json);
 
         JSONArray CABC = jsonOB.getJSONArray(KEY_CABC);
@@ -327,21 +329,25 @@ public class DeviceSettings extends PreferenceFragment
         // Remove CABC preference if device is unsupported
         if (!CABC_DeviceMatched) {
             mPreferenceCategory.removePreference(findPreference(KEY_CABC));
-        }
+            prefs.edit().putBoolean("CABC_DeviceMatched", false).commit();
+        } else prefs.edit().putBoolean("CABC_DeviceMatched", true).commit();
 
         // Remove DC-Dimming preference if device is unsupported
         if (!DC_DeviceMatched) {
             mPreferenceCategory.removePreference(findPreference(KEY_DC_SWITCH));
-        }
+            prefs.edit().putBoolean("DC_DeviceMatched", false).commit();
+        } else prefs.edit().putBoolean("DC_DeviceMatched", true).commit();
 
         // Remove HBM preference if device is unsupported
         if (!HBM_DeviceMatched) {
             mPreferenceCategory.removePreference(findPreference(KEY_HBM_SWITCH));
-        }
+            prefs.edit().putBoolean("HBM_DeviceMatched", false).commit();
+        } else prefs.edit().putBoolean("HBM_DeviceMatched", true).commit();
 
         // Remove sRGB preference if device is unsupported
         if (!sRGB_DeviceMatched) {
             mPreferenceCategory.removePreference(findPreference(KEY_SRGB_SWITCH));
-        }
+            prefs.edit().putBoolean("sRGB_DeviceMatched", false).commit();
+        } else prefs.edit().putBoolean("sRGB_DeviceMatched", true).commit();
     }
 }

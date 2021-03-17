@@ -17,18 +17,28 @@
 */
 package com.realmeparts;
 
+import android.content.SharedPreferences;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
+import androidx.preference.PreferenceManager;
 
 public class CABCTileService extends TileService {
 
     @Override
     public void onStartListening() {
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         int currentState = Utils.getintProp(DeviceSettings.CABC_SYSTEM_PROPERTY, 0);
 
         Tile tile = getQsTile();
-        tile.setState(Tile.STATE_ACTIVE);
-        tile.setLabel(getResources().getStringArray(R.array.cabc_profiles)[currentState]);
+
+        if (!sharedPrefs.getBoolean("CABC_DeviceMatched", false)) {
+            tile.setState(Tile.STATE_UNAVAILABLE);
+            tile.setLabel(getResources().getString(R.string.unsupported));
+        } else {
+            tile.setState(Tile.STATE_ACTIVE);
+            tile.setLabel(getResources().getStringArray(R.array.cabc_profiles)[currentState]);
+        }
 
         tile.updateTile();
         super.onStartListening();
