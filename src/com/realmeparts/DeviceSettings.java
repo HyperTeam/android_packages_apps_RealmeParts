@@ -63,6 +63,8 @@ import org.json.JSONObject;
 public class DeviceSettings extends PreferenceFragment
         implements Preference.OnPreferenceChangeListener {
 
+    private static final String ProductName = Utils.ProductName();
+ 
     private static final String KEY_CATEGORY_CHARGING = "charging";
     private static final String KEY_CATEGORY_GRAPHICS = "graphics";
     public static final String KEY_SRGB_SWITCH = "srgb";
@@ -118,6 +120,8 @@ public class DeviceSettings extends PreferenceFragment
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+        prefs.edit().putString("ProductName", ProductName).commit();
+
         addPreferencesFromResource(R.xml.main);
         getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -292,7 +296,7 @@ public class DeviceSettings extends PreferenceFragment
 
         JSONArray CABC = jsonOB.getJSONArray(KEY_CABC);
         for (int i = 0; i < CABC.length(); i++) {
-            if (CABC.getString(i).toUpperCase().contains(Build.PRODUCT)) {
+            if (ProductName.toUpperCase().contains(CABC.getString(i))) {
                 {
                     CABC_DeviceMatched = true;
                 }
@@ -301,7 +305,7 @@ public class DeviceSettings extends PreferenceFragment
 
         JSONArray DC = jsonOB.getJSONArray(KEY_DC_SWITCH);
         for (int i = 0; i < DC.length(); i++) {
-            if (DC.getString(i).toUpperCase().contains(Build.PRODUCT)) {
+            if (ProductName.toUpperCase().contains(DC.getString(i))) {
                 {
                     DC_DeviceMatched = true;
                 }
@@ -310,7 +314,7 @@ public class DeviceSettings extends PreferenceFragment
 
         JSONArray HBM = jsonOB.getJSONArray(KEY_HBM_SWITCH);
         for (int i = 0; i < HBM.length(); i++) {
-            if (HBM.getString(i).toUpperCase().contains(Build.PRODUCT)) {
+            if (ProductName.toUpperCase().contains(HBM.getString(i))) {
                 {
                     HBM_DeviceMatched = true;
                 }
@@ -319,7 +323,7 @@ public class DeviceSettings extends PreferenceFragment
 
         JSONArray sRGB = jsonOB.getJSONArray(KEY_SRGB_SWITCH);
         for (int i = 0; i < sRGB.length(); i++) {
-            if (sRGB.getString(i).toUpperCase().contains(Build.PRODUCT)) {
+            if (ProductName.toUpperCase().contains(DC.getString(i))) {
                 {
                     sRGB_DeviceMatched = true;
                 }
