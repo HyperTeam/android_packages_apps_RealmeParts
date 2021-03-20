@@ -1,40 +1,69 @@
-## FEATURES 
-### Smart Charging: 
+RealmeParts
+-----------
+RealmeParts is an open-source Android application written in java. It offers several customization settings while making use of various device-specific nodes on Realme devices.
 
-> Due to SuperVooc charging at high speed the battery/device gets heated eventually, to mitigate this problem we have implemented cool down based on battery temperature & also helps in stopping the charging based on limit set by user including a toggle which can reset battery stats (optional). Smart Charging also allows user to control the charging speed, for now users can choose between 1.8A | 15W & default speed.
-### Game Mode: 
->Boost touch sampling rate, on device side you can also set performance tweaks (optional), Do-Not-Disturb (DND) toggle is avaliable with notification support which lets user notify that Game Mode is enabled.
+## Features
+RealmeParts offers various features. You can grab a quick view of the features offered by RealmeParts in the GIF below:
 
->TODO: Enable Game Mode automatically based on user selected game packages.
-### Ambient Display Gestures:
->Which includes Always on Display (AOD), Pulse notifications on pick up, Hand wave gesture etc.,
-### Screen Refresh Rate Mode
->User can choose 60Hz or 90Hz, also Smooth Display toggle which can force display to 90Hz.
+<p align="center">
+  <img src="assets/RealmeParts.gif">
+</p>
 
+Here is a complete detailed list of the features with their caveats and support status.
+
+- **Ambient Display Gestures**:
+  - Always on Display (AOD) to keep Ambient Display always on,
+  - Pulse notifications on pick up,
+  - Hand wave gesture to light up display on hand's wave.
+
+- **CABC Mode**: CABC automatically dims the backlight to the lowest level required for the brightest pixel on the display reducing the overall average power needed by the display and backlight without affecting performance.
+> Supported Devices: Realme 3 Pro & 5 Pro
+
+- **DC-Dimming**: DC dimming lowers the actual amount of power powering the display at lower brightness levels. This gives an improvement in battery life.
+
+- **Game Mode**:
+  - Boosting touch sampling rate for better input responsiveness,
+  - Do-Not-Disturb (DND) toggle to hide intrusive notifications during gaming.
+>TODO: Enable Game Mode automatically based on user-selected game packages.
+
+- **HBM Mode**: High Brightness Mode bumps your screen's peak luminance for better visibility outdoors at the cost of increased battery drain.
+
+- **Misc Settings**: 
+  - USB-OTG power supply for supported external devices,
+  - FPS Overlay toogle to show current FPS
+
+- **Screen Refresh Rate Mode**:
+  - Ability to choose between 60Hz or 90Hz,
+  - Smooth Display toggle for forcing display refresh rate to 90Hz
 >TODO: Add Per-App refresh rate setting
-### Misc Settings:
->USB-OTG
 
-> FPS Overlay
-### DC-Dimming & sRGB Mode
->Currently DC-Dim & sRGB is restricted to realme X2 & X2 Pro since there is no proper way to confirm which realme device has DC-Dim & sRGB for real, so we have added device based checks for it. Check https://github.com/HyperTeam/packages_apps_RealmeParts/blob/master/res/raw/realmeParts_features.json
-to know which devices support these both features. You can always send pull request or even open issue if you would like to have these in your devices.  
+- **Smart Charging**:
+  - Cool down based on battery temperature during charging,
+  - Max charging limit control,
+  - Battery stats reset toggle,
+  - Charging speed control.
+> Available Charging Speeds: 1.8A | 15W, and default speed
 
-### CABC Mode
->https://twitter.com/realmeIndia/status/1120227947573665792 (Enabled for realme 3 Pro & 5 Pro, copy cabc init script)
+- **sRGB Mode**:  SRGB mode provides accurate SRGB colors without any additional messing with color settings by users.
 
-### HBM Mode
->High Brightness Mode for better visibility in outdoors
-
-## Setting up Realme Parts
-
-    git clone https://github.com/HyperTeam/packages_apps_RealmeParts.git packages/apps/RealmeParts
-### Build the package or include parts makefile
+## Building RealmeParts
+RealmeParts is supposed to be built using AOSP's build (make) system. To build it, clone this repository into the `packages/apps/RealmeParts` directory of your OS's source code and include the following lines in your device's makefile:
 ```
-# Parts
+# RealmeParts
 $(call inherit-product, packages/apps/RealmeParts/parts.mk)
+```
+If your device supports CABC feature (Check compability in **Features** section), you need to include an additional `.rc` file to enable it's support. You can do it by including the following lines in your device's makefile:
+```
 PRODUCT_COPY_FILES += \
     packages/apps/RealmeParts/init/cabc.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/cabc.rc
 ```
-## Overview
-<img align="left" width="400" height="800" src="/RealmeParts.gif">
+## Development
+RealmeParts is licensed and distributed under **The GNU General Public License v3.0**. 
+
+Its lead developers and contributors are:
+- [Ajith](https://github.com/4j17h)
+- [Karthick Chandran](https://github.com/karthick111)
+
+You can view the complete list of contributors here on [GitHub's Contributors Graph](https://github.com/HyperTeam/packages_apps_RealmeParts/graphs/contributors).
+
+You can open a Pull Request or an Issue in case you want to contribute to this project or raise an issue/request. Contributions are always welcome.
