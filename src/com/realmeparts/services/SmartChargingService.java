@@ -119,7 +119,7 @@ public class SmartChargingService extends Service {
 
             Log.d("DeviceSettings", "Battery Temperature: "+battTemp+", Battery Capacity: "+battCap+"%, "+"\n"+"Charging Speed: "+currentmA+" mA, "+"Cool Down: "+coolDown);
 
-            if (chargingLimit == 1) {
+            if(isCoolDownAvailable() && chargingLimit == 1){
                 // Setting cool down values based on user selected charging speed
                 if (chargingSpeed != 0 && coolDown != chargingSpeed) {
                     Utils.writeValue(cool_down, String.valueOf(chargingSpeed));
@@ -135,11 +135,11 @@ public class SmartChargingService extends Service {
                     Log.d("DeviceSettings","Battery Temperature: "+battTemp+"\n"+"Battery Capacity: "+battCap +"%"+"\n"+"No cool down applied");
                     }
                 }
-            } else Log.d("DeviceSettings","Battery Capacity: "+battCap+"%, "+"User selected charging limit: "+userSelectedChargingLimit+"%. Not Charging");
+            }
 
             // Charging limit based on user selected battery percentage
             if (((userSelectedChargingLimit == battCap) || (userSelectedChargingLimit < battCap)) && chargingLimit != 0) {
-                Utils.writeValue(cool_down, "0");
+                if(isCoolDownAvailable()) Utils.writeValue(cool_down, "0");
                 Utils.writeValue(mmi_charging_enable, "0");
                 Log.d("DeviceSettings", "Battery Temperature: "+battTemp+", Battery Capacity: "+battCap+"%, " +"User selected charging limit: "+userSelectedChargingLimit+"%. Stopped charging");
                 AppNotification.Send(context, Charging_Notification_Channel_ID, context.getString(R.string.smart_charging_title), context.getString(R.string.smart_charging_stoppped_notif));
@@ -151,6 +151,10 @@ public class SmartChargingService extends Service {
             }
         }
     };
+
+    public static boolean isCoolDownAvailable() {
+        return Utils.fileWritable(cool_down);
+    }
 
     public static void resetStats() {
         try {

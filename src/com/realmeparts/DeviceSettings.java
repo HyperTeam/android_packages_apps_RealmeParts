@@ -261,11 +261,16 @@ public class DeviceSettings extends PreferenceFragment
         return super.onOptionsItemSelected(item);
     }
 
-    // Remove Smart Charging preference category if cool_down node is unavailable
+    // Remove Charging Speed preference if cool_down node is unavailable
     private void isCoolDownAvailable() {
-        if (!Utils.fileWritable(SmartChargingService.cool_down)) {
-            mPreferenceCategory = (PreferenceCategory) findPreference(KEY_CATEGORY_CHARGING);
-            getPreferenceScreen().removePreference(mPreferenceCategory);
+        mPreferenceCategory = (PreferenceCategory) findPreference(KEY_CATEGORY_CHARGING);
+
+        if (Utils.fileWritable(SmartChargingService.mmi_charging_enable)) {
+            if (!Utils.fileWritable(SmartChargingService.cool_down)) {
+            mPreferenceCategory.removePreference(findPreference(KEY_CHARGING_SPEED));
+            }
+        } else {
+            mPreferenceCategory.removePreference(mPreferenceCategory);
         }
     }
 
