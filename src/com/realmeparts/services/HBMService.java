@@ -28,6 +28,19 @@ import android.util.Log;
 
 public class HBMService extends Service {
 
+    public BroadcastReceiver mHBMintent = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction() == Intent.ACTION_USER_PRESENT) {
+                Utils.writeValue(HBMModeSwitch.getFile(), "1");
+                Log.d("DeviceSettings", "HBM Enabled");
+            } else if (intent.getAction() == Intent.ACTION_SCREEN_OFF) {
+                Utils.writeValue(HBMModeSwitch.getFile(), "0");
+                Log.d("DeviceSettings", "HBM Disabled");
+            }
+        }
+    };
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -47,18 +60,4 @@ public class HBMService extends Service {
     public IBinder onBind(Intent intent) {
         return null;
     }
-
-    public BroadcastReceiver mHBMintent = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction() == Intent.ACTION_USER_PRESENT) {
-                Utils.writeValue(HBMModeSwitch.getFile(), "1");
-                Log.d("DeviceSettings", "HBM Enabled");
-            }
-            else if (intent.getAction() == Intent.ACTION_SCREEN_OFF) {
-                Utils.writeValue(HBMModeSwitch.getFile(), "0");
-                Log.d("DeviceSettings", "HBM Disabled");
-            }
-        }
-    };
 }

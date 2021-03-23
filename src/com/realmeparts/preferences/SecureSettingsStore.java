@@ -24,7 +24,7 @@ import android.provider.Settings;
 public class SecureSettingsStore extends androidx.preference.PreferenceDataStore
         implements PreferenceDataStore {
 
-    private ContentResolver mContentResolver;
+    private final ContentResolver mContentResolver;
 
     public SecureSettingsStore(ContentResolver contentResolver) {
         mContentResolver = contentResolver;

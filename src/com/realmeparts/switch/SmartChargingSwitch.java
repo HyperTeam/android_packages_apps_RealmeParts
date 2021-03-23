@@ -18,28 +18,21 @@
 
 package com.realmeparts;
 
-import android.app.Service;
-import android.content.IntentFilter;
-import android.content.Intent;
 import android.content.Context;
-import android.content.SharedPreferences;
-import androidx.preference.Preference;
-import androidx.preference.Preference.OnPreferenceChangeListener;
-import androidx.preference.PreferenceManager;
-import android.os.UserHandle;
+import android.content.Intent;
 import android.util.Log;
 
-import com.realmeparts.DeviceSettings;
+import androidx.preference.Preference;
+import androidx.preference.Preference.OnPreferenceChangeListener;
 
 public class SmartChargingSwitch implements OnPreferenceChangeListener {
 
+    private static final String FILE = "/sys/class/power_supply/battery/mmi_charging_enable";
     private static Context mContext;
 
     public SmartChargingSwitch(Context context) {
         mContext = context;
     }
-
-    private static final String FILE = "/sys/class/power_supply/battery/mmi_charging_enable";
 
     public static String getFile() {
         if (Utils.fileWritable(FILE)) {
@@ -61,13 +54,13 @@ public class SmartChargingSwitch implements OnPreferenceChangeListener {
         Boolean enabled = (Boolean) newValue;
         Intent SmartChargingSVC = new Intent(mContext, com.realmeparts.SmartChargingService.class);
         if (enabled) {
-            mContext.startServiceAsUser(SmartChargingSVC, UserHandle.CURRENT);
+            mContext.startService(SmartChargingSVC);
             DeviceSettings.mSeekBarPreference.setEnabled(true);
             DeviceSettings.mResetStats.setEnabled(true);
             DeviceSettings.mChargingSpeed.setEnabled(true);
             Log.d("DeviceSettings", "Starting SmartChargingSVC");
         } else {
-            mContext.stopServiceAsUser(SmartChargingSVC, UserHandle.CURRENT);
+            mContext.stopService(SmartChargingSVC);
             DeviceSettings.mSeekBarPreference.setEnabled(false);
             DeviceSettings.mResetStats.setEnabled(false);
             DeviceSettings.mChargingSpeed.setEnabled(false);

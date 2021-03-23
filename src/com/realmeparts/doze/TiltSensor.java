@@ -37,17 +37,17 @@ public class TiltSensor implements SensorEventListener {
     private static final int BATCH_LATENCY_IN_MS = 100;
     private static final int MIN_PULSE_INTERVAL_MS = 2500;
 
-    private SensorManager mSensorManager;
-    private Sensor mSensor;
-    private Context mContext;
-    private ExecutorService mExecutorService;
+    private final SensorManager mSensorManager;
+    private final Sensor mSensor;
+    private final Context mContext;
+    private final ExecutorService mExecutorService;
 
     private long mEntryTimestamp;
 
     public TiltSensor(Context context) {
         mContext = context;
         mSensorManager = mContext.getSystemService(SensorManager.class);
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_TILT_DETECTOR);
+        mSensor = DozeUtils.getSensor(mSensorManager, "android.sensor.tilt_detector");
         mExecutorService = Executors.newSingleThreadExecutor();
     }
 

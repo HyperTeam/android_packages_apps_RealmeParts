@@ -39,10 +39,10 @@ public class ProximitySensor implements SensorEventListener {
     // Minimum time until the device is considered to have been in the pocket: 2s
     private static final int POCKET_MIN_DELTA_NS = 2000 * 1000 * 1000;
 
-    private SensorManager mSensorManager;
-    private Sensor mSensor;
-    private Context mContext;
-    private ExecutorService mExecutorService;
+    private final SensorManager mSensorManager;
+    private final Sensor mSensor;
+    private final Context mContext;
+    private final ExecutorService mExecutorService;
 
     private boolean mSawNear = false;
     private long mInPocketTime = 0;

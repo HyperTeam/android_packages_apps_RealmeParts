@@ -13,37 +13,37 @@
      limitations under the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          android:sharedUserId="android.uid.system"
-          package="com.realmeparts"
-          android:versionCode="1"
-          android:versionName="1.0" >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:sharedUserId="android.uid.system"
+    package="com.realmeparts"
+    android:versionCode="1"
+    android:versionName="1.0" >
 
-    <uses-permission android:name="android.permission.INJECT_EVENTS"/>
+    <uses-permission android:name="android.permission.INJECT_EVENTS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
 
     <!-- Required to enable dnd during game mode -->
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
-    <protected-broadcast android:name="com.realmeparts.UPDATE_SETTINGS" />
     <protected-broadcast android:name="com.android.systemui.doze.pulse" />
-
-    <uses-sdk
-        android:minSdkVersion="28"
-        android:targetSdkVersion="29" />
 
     <application
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/device_title"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:allowBackup="true"
+        android:fullBackupContent="true">
 
         <!-- Doze -->
         <activity
             android:name=".doze.DozeSettingsActivity"
             android:label="@string/ambient_display_gestures_title"
-            android:theme="@style/Theme.Main">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="com.android.settings.action.IA_SETTINGS" />
             </intent-filter>

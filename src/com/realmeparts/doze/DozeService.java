@@ -31,7 +31,7 @@ public class DozeService extends Service {
 
     private ProximitySensor mProximitySensor;
     private TiltSensor mTiltSensor;
-    private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {

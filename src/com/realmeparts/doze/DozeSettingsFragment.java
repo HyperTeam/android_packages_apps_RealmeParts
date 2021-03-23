@@ -33,28 +33,26 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import androidx.preference.Preference;
+import androidx.preference.Preference.OnPreferenceChangeListener;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragment;
 import androidx.preference.SwitchPreference;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.Preference.OnPreferenceChangeListener;
 
 import com.realmeparts.R;
 
 public class DozeSettingsFragment extends PreferenceFragment implements OnPreferenceChangeListener,
         CompoundButton.OnCheckedChangeListener {
 
+    private final Handler mHandler = new Handler();
     private TextView mTextView;
     private View mSwitchBar;
-
     private SwitchPreference mWakeOnGesturePreference;
     private SwitchPreference mAlwaysOnDisplayPreference;
-
     private SwitchPreference mPickUpPreference;
     private SwitchPreference mHandwavePreference;
     private SwitchPreference mPocketPreference;
-
-    private Handler mHandler = new Handler();
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {

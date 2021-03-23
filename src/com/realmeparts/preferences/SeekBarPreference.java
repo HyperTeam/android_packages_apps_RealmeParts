@@ -17,32 +17,28 @@
 package com.realmeparts;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.util.Log;
 
 import androidx.core.content.res.TypedArrayUtils;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceViewHolder;
-
-import com.android.settingslib.RestrictedPreference;
-
-import com.realmeparts.R;
 
 /**
  * Based on android.preference.SeekBarPreference, but uses support preference as base.
  */
-public class SeekBarPreference extends RestrictedPreference
+public class SeekBarPreference extends Preference
         implements OnSeekBarChangeListener, View.OnKeyListener {
 
     public static int mProgress;
@@ -83,12 +79,20 @@ public class SeekBarPreference extends RestrictedPreference
 
     public SeekBarPreference(Context context, AttributeSet attrs) {
         this(context, attrs, TypedArrayUtils.getAttr(context,
-                        androidx.preference.R.attr.seekBarPreferenceStyle,
-                        com.android.internal.R.attr.seekBarPreferenceStyle));
+                androidx.preference.R.attr.seekBarPreferenceStyle,
+                com.android.internal.R.attr.seekBarPreferenceStyle));
     }
 
     public SeekBarPreference(Context context) {
         this(context, null);
+    }
+
+    public static int getProgress() {
+        return mProgress;
+    }
+
+    public void setProgress(int progress) {
+        setProgress(progress, true);
     }
 
     public void setShouldBlink(boolean shouldBlink) {
@@ -108,7 +112,7 @@ public class SeekBarPreference extends RestrictedPreference
         mSeekBar.setEnabled(isEnabled());
 
         mSelected_Value = (TextView) view.findViewById(R.id.selected_value);
-        mSelected_Value.setText(String.valueOf(getProgress()) + "%");
+        mSelected_Value.setText(getProgress() + "%");
 
         final CharSequence title = getTitle();
         if (!TextUtils.isEmpty(mSeekBarContentDescription)) {
@@ -156,11 +160,15 @@ public class SeekBarPreference extends RestrictedPreference
             return false;
         }
 
-        SeekBar seekBar = (SeekBar) v.findViewById(R.id.seekbar);
+        SeekBar seekBar = v.findViewById(R.id.seekbar);
         if (seekBar == null) {
             return false;
         }
         return seekBar.onKeyDown(keyCode, event);
+    }
+
+    public int getMax() {
+        return mMax;
     }
 
     public void setMax(int max) {
@@ -170,23 +178,15 @@ public class SeekBarPreference extends RestrictedPreference
         }
     }
 
+    public int getMin() {
+        return mMin;
+    }
+
     public void setMin(int min) {
         if (min != mMin) {
             mMin = min;
             notifyChanged();
         }
-    }
-
-    public int getMax() {
-        return mMax;
-    }
-
-    public int getMin() {
-        return mMin;
-    }
-
-    public void setProgress(int progress) {
-        setProgress(progress, true);
     }
 
     /**
@@ -226,10 +226,6 @@ public class SeekBarPreference extends RestrictedPreference
         }
     }
 
-    public static int getProgress() {
-        return mProgress;
-    }
-
     /**
      * Persist the seekBar's progress value if callChangeListener
      * returns true, otherwise set the seekBar's progress to the stored value
@@ -262,10 +258,10 @@ public class SeekBarPreference extends RestrictedPreference
         mTrackingTouch = false;
         if (seekBar.getProgress() != mProgress) {
             syncProgress(seekBar);
-            mSelected_Value.setText(String.valueOf(mProgress + "%"));
+            mSelected_Value.setText(mProgress + "%");
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
             sharedPrefs.edit().putInt("seek_bar", mProgress).commit();
-            Log.d("DeviceSettings", "Charging limit set at " + Integer.toString(mProgress));
+            Log.d("DeviceSettings", "Charging limit set at " + mProgress);
             //Toast.makeText(getContext(), "Charging stops at " + mProgress + "%" , Toast.LENGTH_SHORT).show();
         }
     }
@@ -316,6 +312,17 @@ public class SeekBarPreference extends RestrictedPreference
      * It is important to always call through to super methods.
      */
     private static class SavedState extends BaseSavedState {
+        @SuppressWarnings("unused")
+        public static final Parcelable.Creator<SavedState> CREATOR =
+                new Parcelable.Creator<SavedState>() {
+                    public SavedState createFromParcel(Parcel in) {
+                        return new SavedState(in);
+                    }
+
+                    public SavedState[] newArray(int size) {
+                        return new SavedState[size];
+                    }
+                };
         int progress;
         int max;
         int min;
@@ -329,6 +336,10 @@ public class SeekBarPreference extends RestrictedPreference
             min = source.readInt();
         }
 
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
@@ -338,21 +349,5 @@ public class SeekBarPreference extends RestrictedPreference
             dest.writeInt(max);
             dest.writeInt(min);
         }
-
-        public SavedState(Parcelable superState) {
-            super(superState);
-        }
-
-        @SuppressWarnings("unused")
-        public static final Parcelable.Creator<SavedState> CREATOR =
-                new Parcelable.Creator<SavedState>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
     }
 }

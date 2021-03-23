@@ -25,59 +25,152 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.ServiceManager;
-import android.service.dreams.DreamService;
 import android.service.dreams.IDreamManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
-import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.lang.StringBuffer;
-import java.lang.Math;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class FPSInfoService extends Service {
+    private static final String MEASURED_FPS = "/sys/devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/sde-crtc-0/measured_fps";
+    private final String TAG = "FPSInfoService";
     private View mView;
     private Thread mCurFPSThread;
-    private final String TAG = "FPSInfoService";
     private String mFps = null;
-
-    private static final String MEASURED_FPS = "/sys/devices/platform/soc/ae00000.qcom,mdss_mdp/drm/card0/sde-crtc-0/measured_fps";
-
+    private int mPaddingLeft;
+    private int mPaddingTop;
+    private int mPaddingRight;
+    private int mPaddingBottom;
     private IDreamManager mDreamManager;
+    private final BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+                Log.d(TAG, "ACTION_SCREEN_ON " + isDozeMode());
+                if (!isDozeMode()) {
+                    startThread();
+                    mView.setVisibility(View.VISIBLE);
+                }
+            } else if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+                Log.d(TAG, "ACTION_SCREEN_OFF");
+                mView.setVisibility(View.GONE);
+                stopThread();
+            }
+        }
+    };
+
+    private static String readOneLine(String fname) {
+        BufferedReader br;
+        String line = null;
+        try {
+            br = new BufferedReader(new FileReader(fname), 512);
+            try {
+                line = br.readLine();
+            } finally {
+                br.close();
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return line;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        mView = new FPSView(this);
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                PixelFormat.TRANSLUCENT);
+        params.gravity = Gravity.LEFT | Gravity.TOP;
+        params.setTitle("FPS Info");
+
+        startThread();
+
+        mDreamManager = IDreamManager.Stub.asInterface(
+                ServiceManager.checkService("dreams"));
+        IntentFilter screenStateFilter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+        screenStateFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        registerReceiver(mScreenStateReceiver, screenStateFilter);
+
+        WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        wm.addView(mView, params);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopThread();
+        ((WindowManager) getSystemService(WINDOW_SERVICE)).removeView(mView);
+        mView = null;
+        unregisterReceiver(mScreenStateReceiver);
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    private boolean isDozeMode() {
+        try {
+            if (mDreamManager != null && mDreamManager.isDreaming()) {
+                return true;
+            }
+        } catch (RemoteException e) {
+            return false;
+        }
+        return false;
+    }
+
+    private void startThread() {
+        Log.d(TAG, "started CurFPSThread");
+        mCurFPSThread = new CurFPSThread(mView.getHandler());
+        mCurFPSThread.start();
+    }
+
+    private void stopThread() {
+        if (mCurFPSThread != null && mCurFPSThread.isAlive()) {
+            Log.d(TAG, "stopping CurFPSThread");
+            mCurFPSThread.interrupt();
+            try {
+                mCurFPSThread.join();
+            } catch (InterruptedException e) {
+            }
+        }
+        mCurFPSThread = null;
+    }
 
     private class FPSView extends View {
-        private Paint mOnlinePaint;
-        private float mAscent;
-        private int mFH;
-        private int mMaxWidth;
+        private final Paint mOnlinePaint;
+        private final float mAscent;
+        private final int mFH;
+        private final int mMaxWidth;
 
         private int mNeededWidth;
         private int mNeededHeight;
 
         private boolean mDataAvail;
 
-        private Handler mCurFPSHandler = new Handler() {
+        private final Handler mCurFPSHandler = new Handler() {
             public void handleMessage(Message msg) {
-                if(msg.obj==null){
+                if (msg.obj == null) {
                     return;
                 }
-                if(msg.what==1){
+                if (msg.what == 1) {
                     String msgData = (String) msg.obj;
                     msgData = msgData.substring(0, Math.min(msgData.length(), 9));
                     mFps = msgData;
@@ -107,10 +200,10 @@ public class FPSInfoService extends Service {
 
             mAscent = mOnlinePaint.ascent();
             float descent = mOnlinePaint.descent();
-            mFH = (int)(descent - mAscent + .5f);
+            mFH = (int) (descent - mAscent + .5f);
 
-            final String maxWidthStr="fps: 60.1";
-            mMaxWidth = (int)mOnlinePaint.measureText(maxWidthStr);
+            final String maxWidthStr = "fps: 60.1";
+            mMaxWidth = (int) mOnlinePaint.measureText(maxWidthStr);
 
             updateDisplay();
         }
@@ -144,17 +237,17 @@ public class FPSInfoService extends Service {
             }
 
             final int W = mNeededWidth;
-            final int LEFT = getWidth()-1;
+            final int LEFT = getWidth() - 1;
 
             int x = LEFT - mPaddingLeft;
             int top = mPaddingTop + 2;
             int bottom = mPaddingTop + mFH - 2;
 
-            int y = mPaddingTop - (int)mAscent;
+            int y = mPaddingTop - (int) mAscent;
 
-            String s=getFPSInfoString();
-            canvas.drawText(s, LEFT-mPaddingLeft-mMaxWidth,
-                    y-1, mOnlinePaint);
+            String s = getFPSInfoString();
+            canvas.drawText(s, LEFT - mPaddingLeft - mMaxWidth,
+                    y - 1, mOnlinePaint);
             y += mFH;
         }
 
@@ -174,17 +267,17 @@ public class FPSInfoService extends Service {
             }
         }
 
-        public Handler getHandler(){
+        public Handler getHandler() {
             return mCurFPSHandler;
         }
     }
 
     protected class CurFPSThread extends Thread {
+        private final Handler mHandler;
         private boolean mInterrupt = false;
-        private Handler mHandler;
 
-        public CurFPSThread(Handler handler){
-            mHandler=handler;
+        public CurFPSThread(Handler handler) {
+            mHandler = handler;
         }
 
         public void interrupt() {
@@ -196,7 +289,7 @@ public class FPSInfoService extends Service {
             try {
                 while (!mInterrupt) {
                     sleep(1000);
-                    StringBuffer sb=new StringBuffer();
+                    StringBuffer sb = new StringBuffer();
                     String fpsVal = FPSInfoService.readOneLine(MEASURED_FPS);
                     mHandler.sendMessage(mHandler.obtainMessage(1, fpsVal));
                 }
@@ -204,108 +297,5 @@ public class FPSInfoService extends Service {
                 return;
             }
         }
-    };
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        mView = new FPSView(this);
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_SECURE_SYSTEM_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-            PixelFormat.TRANSLUCENT);
-        params.gravity = Gravity.LEFT | Gravity.TOP;
-        params.setTitle("FPS Info");
-
-        startThread();
-
-        mDreamManager = IDreamManager.Stub.asInterface(
-                ServiceManager.checkService(DreamService.DREAM_SERVICE));
-        IntentFilter screenStateFilter = new IntentFilter(Intent.ACTION_SCREEN_ON);
-        screenStateFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        registerReceiver(mScreenStateReceiver, screenStateFilter);
-
-        WindowManager wm = (WindowManager)getSystemService(WINDOW_SERVICE);
-        wm.addView(mView, params);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        stopThread();
-        ((WindowManager)getSystemService(WINDOW_SERVICE)).removeView(mView);
-        mView = null;
-        unregisterReceiver(mScreenStateReceiver);
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    private static String readOneLine(String fname) {
-        BufferedReader br;
-        String line = null;
-        try {
-            br = new BufferedReader(new FileReader(fname), 512);
-            try {
-                line = br.readLine();
-            } finally {
-                br.close();
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return line;
-    }
-
-    private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
-                Log.d(TAG, "ACTION_SCREEN_ON " + isDozeMode());
-                if (!isDozeMode()) {
-                    startThread();
-                    mView.setVisibility(View.VISIBLE);
-                }
-            } else if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
-                Log.d(TAG, "ACTION_SCREEN_OFF");
-                mView.setVisibility(View.GONE);
-                stopThread();
-            }
-        }
-    };
-
-    private boolean isDozeMode() {
-        try {
-            if (mDreamManager != null && mDreamManager.isDreaming()) {
-                return true;
-            }
-        } catch (RemoteException e) {
-            return false;
-        }
-        return false;
-    }
-
-    private void startThread() {
-        Log.d(TAG, "started CurFPSThread");
-        mCurFPSThread = new CurFPSThread(mView.getHandler());
-        mCurFPSThread.start();
-    }
-
-    private void stopThread() {
-        if (mCurFPSThread != null && mCurFPSThread.isAlive()) {
-            Log.d(TAG, "stopping CurFPSThread");
-            mCurFPSThread.interrupt();
-            try {
-                mCurFPSThread.join();
-            } catch (InterruptedException e) {
-            }
-        }
-        mCurFPSThread = null;
     }
 }

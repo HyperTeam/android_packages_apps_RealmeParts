@@ -20,18 +20,16 @@ package com.realmeparts.doze;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.PowerManager;
-import android.os.SystemClock;
-import android.hardware.display.AmbientDisplayConfiguration;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.hardware.display.AmbientDisplayConfiguration;
+import android.os.PowerManager;
+import android.os.SystemClock;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.Log;
-import androidx.preference.PreferenceManager;
 
-import static android.provider.Settings.Secure.DOZE_ALWAYS_ON;
-import static android.provider.Settings.Secure.DOZE_ENABLED;
+import androidx.preference.PreferenceManager;
 
 public final class DozeUtils {
 
@@ -49,14 +47,12 @@ public final class DozeUtils {
 
     public static void startService(Context context) {
         if (DEBUG) Log.d(TAG, "Starting service");
-        context.startServiceAsUser(new Intent(context, DozeService.class),
-                UserHandle.CURRENT);
+        context.startService(new Intent(context, DozeService.class));
     }
 
     protected static void stopService(Context context) {
         if (DEBUG) Log.d(TAG, "Stopping service");
-        context.stopServiceAsUser(new Intent(context, DozeService.class),
-                UserHandle.CURRENT);
+        context.stopService(new Intent(context, DozeService.class));
     }
 
     public static void checkDozeService(Context context) {
@@ -79,13 +75,11 @@ public final class DozeUtils {
     }
 
     public static boolean isDozeEnabled(Context context) {
-        return Settings.Secure.getInt(context.getContentResolver(),
-                DOZE_ENABLED, 1) != 0;
+        return Settings.Secure.getInt(context.getContentResolver(), "DOZE_ENABLED".toLowerCase(), 1) != 0;
     }
 
     protected static boolean enableDoze(Context context, boolean enable) {
-        return Settings.Secure.putInt(context.getContentResolver(),
-                DOZE_ENABLED, enable ? 1 : 0);
+        return Settings.Secure.putInt(context.getContentResolver(), "DOZE_ENABLED".toLowerCase(), enable ? 1 : 0);
     }
 
     protected static void wakeOrLaunchDozePulse(Context context) {
@@ -95,23 +89,19 @@ public final class DozeUtils {
             powerManager.wakeUp(SystemClock.uptimeMillis(), PowerManager.WAKE_REASON_GESTURE, TAG);
         } else {
             if (DEBUG) Log.d(TAG, "Launch doze pulse");
-            context.sendBroadcastAsUser(
-                    new Intent(DOZE_INTENT), new UserHandle(UserHandle.USER_CURRENT));
+            context.sendBroadcast(new Intent(DOZE_INTENT));
         }
     }
 
     protected static boolean enableAlwaysOn(Context context, boolean enable) {
-        return Settings.Secure.putIntForUser(context.getContentResolver(),
-                DOZE_ALWAYS_ON, enable ? 1 : 0, UserHandle.USER_CURRENT);
+        return Settings.Secure.putInt(context.getContentResolver(), "DOZE_ALWAYS_ON".toLowerCase(), enable ? 1 : 0);
     }
 
     protected static boolean isAlwaysOnEnabled(Context context) {
         final boolean enabledByDefault = context.getResources()
                 .getBoolean(com.android.internal.R.bool.config_dozeAlwaysOnEnabled);
 
-        return Settings.Secure.getIntForUser(context.getContentResolver(),
-                DOZE_ALWAYS_ON, alwaysOnDisplayAvailable(context) && enabledByDefault ? 1 : 0,
-                UserHandle.USER_CURRENT) != 0;
+        return Settings.Secure.getInt(context.getContentResolver(), "DOZE_ALWAYS_ON".toLowerCase(), alwaysOnDisplayAvailable(context) && enabledByDefault ? 1 : 0) != 0;
     }
 
     protected static boolean alwaysOnDisplayAvailable(Context context) {
