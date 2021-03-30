@@ -239,7 +239,7 @@ public class DeviceSettings extends PreferenceFragment
                 mPreferenceCategory.removePreference(findPreference(KEY_CHARGING_SPEED));
             }
         } else {
-            mPreferenceCategory.removePreference(mPreferenceCategory);
+            getPreferenceScreen().removePreference(mPreferenceCategory);
         }
     }
 
