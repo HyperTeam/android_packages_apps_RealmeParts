@@ -50,13 +50,13 @@ public class HBMModeSwitch implements OnPreferenceChangeListener {
         return Utils.getFileValueAsBoolean(getFile(), false);
     }
 
-    public static void TriggerService(boolean enabled) {
-        Intent HBMIntent = new Intent(mContext, com.realmeparts.HBMService.class);
+    public static void TriggerService(boolean enabled, Context context) {
+        Intent HBMIntent = new Intent(context, com.realmeparts.HBMService.class);
         if (enabled) {
-            mContext.startService(HBMIntent);
+            context.startService(HBMIntent);
             Log.d("DeviceSettings", "Starting HBM Service");
         } else if (!enabled && HBMIntent != null) {
-            mContext.stopService(HBMIntent);
+            context.stopService(HBMIntent);
             Log.d("DeviceSettings", "Stopping HBM Service");
         }
     }
@@ -65,7 +65,7 @@ public class HBMModeSwitch implements OnPreferenceChangeListener {
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         Boolean enabled = (Boolean) newValue;
         Utils.writeValue(getFile(), enabled ? "1" : "0");
-        TriggerService(enabled);
+        TriggerService(enabled, mContext);
         return true;
     }
 }
