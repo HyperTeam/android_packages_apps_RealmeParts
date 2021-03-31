@@ -25,11 +25,12 @@ import android.hardware.SensorManager;
 import android.hardware.display.AmbientDisplayConfiguration;
 import android.os.PowerManager;
 import android.os.SystemClock;
-import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
+
+import com.realmeparts.Utils;
 
 public final class DozeUtils {
 
@@ -45,21 +46,11 @@ public final class DozeUtils {
     private static final boolean DEBUG = false;
     private static final String DOZE_INTENT = "com.android.systemui.doze.pulse";
 
-    public static void startService(Context context) {
-        if (DEBUG) Log.d(TAG, "Starting service");
-        context.startService(new Intent(context, DozeService.class));
-    }
-
-    protected static void stopService(Context context) {
-        if (DEBUG) Log.d(TAG, "Stopping service");
-        context.stopService(new Intent(context, DozeService.class));
-    }
-
     public static void checkDozeService(Context context) {
         if (isDozeEnabled(context) && !isAlwaysOnEnabled(context) && sensorsEnabled(context)) {
-            startService(context);
+            Utils.startService(context, DozeService.class);
         } else {
-            stopService(context);
+            Utils.stopService(context, DozeService.class);
         }
     }
 

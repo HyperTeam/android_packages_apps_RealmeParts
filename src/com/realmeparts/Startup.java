@@ -64,11 +64,11 @@ public class Startup extends BroadcastReceiver {
         restore(HBMModeSwitch.getFile(), enabled);
         enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_CHARGING_SWITCH, false);
         if (enabled) {
-            context.startService(new Intent(context, SmartChargingService.class));
+            Utils.startService(context, SmartChargingService.class);
         }
         enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_FPS_INFO, false);
         if (enabled) {
-            context.startService(new Intent(context, FPSInfoService.class));
+            Utils.startService(context, FPSInfoService.class);
         }
         enabled = sharedPrefs.getBoolean("refresh_rate_90Forced", false);
         if (enabled) {
@@ -76,7 +76,7 @@ public class Startup extends BroadcastReceiver {
         }
         enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_HBM_SWITCH, false);
         if (enabled) {
-            context.startService(new Intent(context, HBMService.class));
+            Utils.startService(context, HBMService.class);
         }
     }
 

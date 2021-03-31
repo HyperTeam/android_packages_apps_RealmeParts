@@ -17,11 +17,14 @@
  */
 package com.realmeparts;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemProperties;
+import android.os.UserHandle;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -303,4 +306,13 @@ public class Utils {
         return sThreadExecutor;
     }
 
+    public static void startService(Context context, Class<?> serviceClass ) {
+        context.startServiceAsUser(new Intent(context, serviceClass), UserHandle.CURRENT);
+        Log.d("DeviceSettings", "Starting "+ serviceClass.getCanonicalName());
+    }
+
+    public static void stopService(Context context, Class<?> serviceClass ) {
+        context.stopServiceAsUser(new Intent(context, serviceClass), UserHandle.CURRENT);
+        Log.d("DeviceSettings", "Stopping "+ serviceClass.getCanonicalName());
+    }
 }

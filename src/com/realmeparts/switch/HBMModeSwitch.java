@@ -51,13 +51,10 @@ public class HBMModeSwitch implements OnPreferenceChangeListener {
     }
 
     public static void TriggerService(boolean enabled, Context context) {
-        Intent HBMIntent = new Intent(context, com.realmeparts.HBMService.class);
         if (enabled) {
-            context.startService(HBMIntent);
-            Log.d("DeviceSettings", "Starting HBM Service");
-        } else if (!enabled && HBMIntent != null) {
-            context.stopService(HBMIntent);
-            Log.d("DeviceSettings", "Stopping HBM Service");
+            Utils.startService(context, com.realmeparts.HBMService.class);
+        } else if (!enabled) {
+            Utils.stopService(context, com.realmeparts.HBMService.class);
         }
     }
 

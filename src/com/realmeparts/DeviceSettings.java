@@ -198,11 +198,10 @@ public class DeviceSettings extends PreferenceFragment
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (preference == mFpsInfo) {
             boolean enabled = (Boolean) newValue;
-            Intent fpsinfo = new Intent(this.getContext(), com.realmeparts.FPSInfoService.class);
             if (enabled) {
-                this.getContext().startService(fpsinfo);
+                Utils.startService(this.getContext(), com.realmeparts.FPSInfoService.class);
             } else {
-                this.getContext().stopService(fpsinfo);
+                Utils.stopService(this.getContext(), com.realmeparts.FPSInfoService.class);
             }
         }
 
