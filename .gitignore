@@ -2,7 +2,7 @@
 *.iml
 .idea
 gen/
-/src/build/
-/src/libs/
+/app/build/
+/app/libs/
 .gradle/
 local.properties

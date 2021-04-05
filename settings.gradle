@@ -1,2 +1,2 @@
-include ':src'
+include ':app'
 rootProject.name = "RealmeParts"

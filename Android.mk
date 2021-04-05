@@ -18,7 +18,7 @@
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
-LOCAL_SRC_FILES := $(call all-java-files-under, src)
+LOCAL_SRC_FILES := $(call all-java-files-under, app/src/main/java)
 LOCAL_CERTIFICATE := platform
 LOCAL_PRIVATE_PLATFORM_APIS := true
 LOCAL_PRIVILEGED_MODULE := true
@@ -30,15 +30,17 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
     androidx.core_core \
     androidx.preference_preference
 
+LOCAL_MANIFEST_FILE := app/src/main/AndroidManifest.xml
+
 LOCAL_RESOURCE_DIR := \
-    $(LOCAL_PATH)/res \
+    $(LOCAL_PATH)/app/src/main/res \
     $(TOP)/packages/resources/devicesettings/res
 
 package_resource_overlays := $(strip \
     $(wildcard $(foreach dir, $(PRODUCT_PACKAGE_OVERLAYS), \
-      $(addprefix $(dir)/, packages/apps/DeviceSettings/res))) \
+      $(addprefix $(dir)/, packages/apps/RealmeParts/res))) \
     $(wildcard $(foreach dir, $(DEVICE_PACKAGE_OVERLAYS), \
-      $(addprefix $(dir)/, packages/apps/DeviceSettings/res))))
+      $(addprefix $(dir)/, packages/apps/RealmeParts/res))))
 
 LOCAL_RESOURCE_DIR := $(package_resource_overlays) $(LOCAL_RESOURCE_DIR)
 LOCAL_PROGUARD_ENABLED := optimization
