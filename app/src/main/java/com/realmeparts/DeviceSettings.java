@@ -19,7 +19,6 @@ package com.realmeparts;
 
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.display.DisplayManager;
 import android.os.Bundle;
@@ -38,7 +37,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 
 public class DeviceSettings extends PreferenceFragment
@@ -70,6 +68,7 @@ public class DeviceSettings extends PreferenceFragment
     public static RadioButtonPreference mRefreshRate60;
     public static SeekBarPreference mSeekBarPreference;
     public static DisplayManager mDisplayManager;
+    private static com.realmeparts.VibrationSeekBar mVibrationSeekBar;
     private static NotificationManager mNotificationManager;
     public TwoStatePreference mDNDSwitch;
     public PreferenceCategory mPreferenceCategory;
@@ -92,8 +91,8 @@ public class DeviceSettings extends PreferenceFragment
         prefs.edit().putString("ProductName", ProductName).apply();
 
         addPreferencesFromResource(R.xml.main);
-        getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
         mDCModeSwitch = findPreference(KEY_DC_SWITCH);
         mDCModeSwitch.setEnabled(DCModeSwitch.isSupported());
         mDCModeSwitch.setChecked(DCModeSwitch.isCurrentlyEnabled(this.getContext()));
@@ -104,12 +103,12 @@ public class DeviceSettings extends PreferenceFragment
         mSRGBModeSwitch.setChecked(SRGBModeSwitch.isCurrentlyEnabled(this.getContext()));
         mSRGBModeSwitch.setOnPreferenceChangeListener(new SRGBModeSwitch());
 
-        mHBMModeSwitch = (TwoStatePreference) findPreference(KEY_HBM_SWITCH);
+        mHBMModeSwitch = findPreference(KEY_HBM_SWITCH);
         mHBMModeSwitch.setEnabled(HBMModeSwitch.isSupported());
         mHBMModeSwitch.setChecked(HBMModeSwitch.isCurrentlyEnabled(this.getContext()));
         mHBMModeSwitch.setOnPreferenceChangeListener(new HBMModeSwitch(getContext()));
 
-        mOTGModeSwitch = (TwoStatePreference) findPreference(KEY_OTG_SWITCH);
+        mOTGModeSwitch = findPreference(KEY_OTG_SWITCH);
         mOTGModeSwitch.setEnabled(OTGModeSwitch.isSupported());
         mOTGModeSwitch.setChecked(OTGModeSwitch.isCurrentlyEnabled(this.getContext()));
         mOTGModeSwitch.setOnPreferenceChangeListener(new OTGModeSwitch());
@@ -156,7 +155,7 @@ public class DeviceSettings extends PreferenceFragment
         mFpsInfo.setChecked(prefs.getBoolean(KEY_FPS_INFO, false));
         mFpsInfo.setOnPreferenceChangeListener(this);
 
-        mCABC = (SecureSettingListPreference) findPreference(KEY_CABC);
+        mCABC = findPreference(KEY_CABC);
         mCABC.setValue(Utils.getStringProp(CABC_SYSTEM_PROPERTY, "0"));
         mCABC.setSummary(mCABC.getEntry());
         mCABC.setOnPreferenceChangeListener(this);
@@ -171,6 +170,12 @@ public class DeviceSettings extends PreferenceFragment
 
         isCoolDownAvailable();
         DisplayRefreshRateModes();
+
+        if (!Utils.fileWritable("/sys/class/leds/vibrator/level")) {
+            mPreferenceCategory = findPreference("vibration");
+            getPreferenceScreen().removePreference(mPreferenceCategory);
+        }
+
         try {
             ParseJson();
         } catch (Exception e) {
@@ -231,7 +236,7 @@ public class DeviceSettings extends PreferenceFragment
 
     // Remove Charging Speed preference if cool_down node is unavailable
     private void isCoolDownAvailable() {
-        mPreferenceCategory = (PreferenceCategory) findPreference(KEY_CATEGORY_CHARGING);
+        mPreferenceCategory = findPreference(KEY_CATEGORY_CHARGING);
 
         if (Utils.fileWritable(SmartChargingService.mmi_charging_enable)) {
             if (!Utils.fileWritable(SmartChargingService.cool_down)) {
@@ -256,14 +261,14 @@ public class DeviceSettings extends PreferenceFragment
 
         if (!refreshRate.contains("90")) {
             prefs.edit().putBoolean("refresh_rate_90_device", false).apply();
-            mPreferenceCategory = (PreferenceCategory) findPreference(KEY_CATEGORY_REFRESH_RATE);
+            mPreferenceCategory = findPreference(KEY_CATEGORY_REFRESH_RATE);
             getPreferenceScreen().removePreference(mPreferenceCategory);
         } else prefs.edit().putBoolean("refresh_rate_90_device", true).apply();
     }
 
     private void ParseJson() throws JSONException {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
-        mPreferenceCategory = (PreferenceCategory) findPreference(KEY_CATEGORY_GRAPHICS);
+        mPreferenceCategory = findPreference(KEY_CATEGORY_GRAPHICS);
         String features_json = Utils.InputStreamToString(getResources().openRawResource(R.raw.realmeparts_features));
         JSONObject jsonOB = new JSONObject(features_json);
 

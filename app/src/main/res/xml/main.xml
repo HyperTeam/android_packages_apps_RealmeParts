@@ -130,6 +130,13 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="vibration"
+        android:title="Haptic Vibration Strength">
+        <com.realmeparts.VibrationSeekBar
+            android:layout="@layout/discrete_slider" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="misc"
         android:title="@string/misc_title">
 

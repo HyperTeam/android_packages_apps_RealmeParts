@@ -25,6 +25,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemProperties;
 import android.os.UserHandle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -46,6 +48,9 @@ public class Utils {
     private static volatile Thread sMainThread;
     private static volatile Handler sMainThreadHandler;
     private static volatile ExecutorService sThreadExecutor;
+
+    private static Vibrator mVibrator;
+    private static VibrationEffect mVibrationEffect;
 
     /**
      * Write a string value to the specified file.
@@ -306,13 +311,22 @@ public class Utils {
         return sThreadExecutor;
     }
 
-    public static void startService(Context context, Class<?> serviceClass ) {
+    public static void startService(Context context, Class<?> serviceClass) {
         context.startServiceAsUser(new Intent(context, serviceClass), UserHandle.CURRENT);
-        Log.d("DeviceSettings", "Starting "+ serviceClass.getCanonicalName());
+        Log.d("DeviceSettings", "Starting " + serviceClass.getCanonicalName());
     }
 
-    public static void stopService(Context context, Class<?> serviceClass ) {
+    public static void stopService(Context context, Class<?> serviceClass) {
         context.stopServiceAsUser(new Intent(context, serviceClass), UserHandle.CURRENT);
-        Log.d("DeviceSettings", "Stopping "+ serviceClass.getCanonicalName());
+        Log.d("DeviceSettings", "Stopping " + serviceClass.getCanonicalName());
+    }
+
+    public static void Vibrate(Context context, int SeekBar_Value) {
+        String Vib_LevelValue = Utils.readLine("/sys/class/leds/vibrator/level");
+        if (Integer.parseInt(Vib_LevelValue) > 0 && Integer.parseInt(Vib_LevelValue) == SeekBar_Value) {
+            mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+            mVibrationEffect = VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE);
+            mVibrator.vibrate(mVibrationEffect);
+        }
     }
 }

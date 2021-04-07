@@ -11,5 +11,30 @@
     limitations under the License.
 -->
 <resources>
-    <style name="AppTheme" parent="@android:style/Theme.DeviceDefault.Settings" />
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="sliderStyle">@style/Widget.App.Slider</item>
+        <item name="colorAccent">@*android:color/accent_device_default_light</item>
+    </style>
+
+    <style name="Widget.App.Slider" parent="Widget.MaterialComponents.Slider">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Slider</item>
+        <item name="labelStyle">@style/Widget.App.Tooltip</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Slider" parent="">
+        <item name="colorPrimary">@*android:color/accent_device_default_light</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorOnSurface">#ffffff</item>
+    </style>
+
+    <style name="Widget.App.Tooltip" parent="Widget.MaterialComponents.Tooltip">
+        <item name="android:textAppearance">@style/TextAppearance.App.Tooltip</item>
+        <item name="backgroundTint">@*android:color/accent_device_default_light</item>
+    </style>
+
+    <style name="TextAppearance.App.Tooltip" parent="TextAppearance.MaterialComponents.Tooltip">
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>
