@@ -93,6 +93,7 @@
 
         <Preference
             android:key="doze"
+            android:icon="@drawable/ic_doze"
             android:title="@string/ambient_display_gestures_title"
             android:summary="@string/ambient_display_gestures_summary">
             <intent android:action="android.intent.action.MAIN"
