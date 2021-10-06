@@ -35,7 +35,7 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/device_title"
-        android:theme="@style/AppTheme"
+            android:theme="@style/Theme.SubSettingsBase"
         android:allowBackup="true"
         android:fullBackupContent="true">
 
@@ -43,7 +43,7 @@
         <activity
             android:name=".doze.DozeSettingsActivity"
             android:label="@string/ambient_display_gestures_title"
-            android:theme="@style/AppTheme"
+            android:theme="@style/Theme.SubSettingsBase"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.android.settings.action.IA_SETTINGS" />

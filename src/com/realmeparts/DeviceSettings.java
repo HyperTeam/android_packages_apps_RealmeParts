@@ -25,7 +25,6 @@ import android.hardware.display.DisplayManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
-import android.view.MenuItem;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -92,7 +91,6 @@ public class DeviceSettings extends PreferenceFragment
         prefs.edit().putString("ProductName", ProductName).apply();
 
         addPreferencesFromResource(R.xml.main);
-        getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
 
         mDCModeSwitch = findPreference(KEY_DC_SWITCH);
         mDCModeSwitch.setEnabled(DCModeSwitch.isSupported());
@@ -216,17 +214,6 @@ public class DeviceSettings extends PreferenceFragment
             Utils.setStringProp(CABC_SYSTEM_PROPERTY, (String) newValue);
         }
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                getActivity().finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     // Remove Charging Speed preference if cool_down node is unavailable
