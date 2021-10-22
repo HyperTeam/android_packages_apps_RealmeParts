@@ -44,7 +44,7 @@ public class AppNotification {
                 .setOngoing(true)
                 .setChannelId(Notification_Channel_Name);
         Intent intent = new Intent(context, DeviceSettingsActivity.class);
-        final PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        final PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         notificationBuilder.setContentIntent(pendingIntent);
 
         Notification notification = notificationBuilder.build();
