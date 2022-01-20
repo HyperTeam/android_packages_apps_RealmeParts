@@ -296,7 +296,7 @@ public class DeviceSettings extends PreferenceFragment
 
         JSONArray sRGB = jsonOB.getJSONArray(KEY_SRGB_SWITCH);
         for (int i = 0; i < sRGB.length(); i++) {
-            if (ProductName.toUpperCase().contains(DC.getString(i))) {
+            if (ProductName.toUpperCase().contains(sRGB.getString(i))) {
                 {
                     sRGB_DeviceMatched = true;
                 }
