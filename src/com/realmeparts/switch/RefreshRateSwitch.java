@@ -18,6 +18,7 @@
 package com.realmeparts;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
@@ -71,11 +72,17 @@ public class RefreshRateSwitch implements OnPreferenceChangeListener {
         } else if (preference == DeviceSettings.mRefreshRate90Forced && enabled) {
             DeviceSettings.mRefreshRate60.setEnabled(false);
             DeviceSettings.mRefreshRate90.setEnabled(false);
-            setRefreshRate = 2;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                setRefreshRate = 4;
+            } else setRefreshRate = 2;
         } else if (preference == DeviceSettings.mRefreshRate90Forced && !enabled) {
             DeviceSettings.mRefreshRate60.setEnabled(true);
             DeviceSettings.mRefreshRate90.setEnabled(true);
-            setRefreshRate = 3;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                setRefreshRate = 2;
+            } else setRefreshRate = 3;
         }
 
         switch (setRefreshRate) {
@@ -92,6 +99,9 @@ public class RefreshRateSwitch implements OnPreferenceChangeListener {
                 break;
             case 3:
                 setForcedRefreshRate(-1);
+                break;
+            case 4:
+                setForcedRefreshRate(1);
                 break;
         }
         return true;
