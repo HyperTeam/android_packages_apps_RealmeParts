@@ -26,12 +26,21 @@ import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 
 import androidx.preference.PreferenceManager;
+import android.os.Build;
+import android.os.IBinder;
+import android.os.Parcel;
+import android.os.RemoteException;
+import android.os.ServiceManager;
+import android.provider.Settings;
+import android.util.Log;
 
 @TargetApi(24)
 public class GameModeTileService extends TileService {
     private boolean enabled = false;
     private Context mContext;
     private NotificationManager mNotificationManager;
+
+    private IBinder SF = ServiceManager.getService("SurfaceFlinger");
 
     @Override
     public void onDestroy() {
@@ -68,7 +77,6 @@ public class GameModeTileService extends TileService {
         mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         enabled = GameModeSwitch.isCurrentlyEnabled(this);
-        //DeviceSettings.mGameModeSwitch.setChecked(!enabled);
         if (!enabled) {
             AppNotification.Send(this, GameModeSwitch.GameMode_Notification_Channel_ID, this.getString(R.string.game_mode_title), this.getString(R.string.game_mode_notif_content));
         } else AppNotification.Cancel(this, GameModeSwitch.GameMode_Notification_Channel_ID);
@@ -77,7 +85,9 @@ public class GameModeTileService extends TileService {
         Utils.writeValue(DeviceSettings.TP_DIRECTION, enabled ? "0" : "1");
         SystemProperties.set("perf_profile", enabled ? "0" : "1");
         if (sharedPrefs.getBoolean("dnd", false)) GameModeTileDND();
-        GameModeSwitch.gameFPS(!enabled);
+
+        if (sharedPrefs.getBoolean("game_fps", false)) GameModeTileGameFPS(!enabled);
+
         sharedPrefs.edit().putBoolean(DeviceSettings.KEY_GAME_SWITCH, !enabled).commit();
         getQsTile().setState(enabled ? Tile.STATE_INACTIVE : Tile.STATE_ACTIVE);
         getQsTile().updateTile();
@@ -93,6 +103,25 @@ public class GameModeTileService extends TileService {
             case 0:
                 mNotificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL);
                 break;
+        }
+    }
+
+    private void GameModeTileGameFPS(boolean enabled) {
+      Settings.System.putFloat(this.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), enabled ? 90f : 60f);
+      Settings.System.putFloat(this.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), enabled ? 90f : 60f);
+      setForcedRefreshRate((Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ? (enabled ? 1 : 0) : (enabled ? 0 : -1));
+    }
+
+    public void setForcedRefreshRate(int value) {
+        Parcel Info = Parcel.obtain();
+        Info.writeInterfaceToken("android.ui.ISurfaceComposer");
+        Info.writeInt(value);
+        try {
+            SF.transact(1035, Info, null, 0);
+        } catch (RemoteException e) {
+            Log.e("DeviceSettings", e.toString());
+        } finally {
+            Info.recycle();
         }
     }
 }

@@ -173,14 +173,14 @@ public class DeviceSettings extends PreferenceFragment
             if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) && prefs.getBoolean("refresh_rate_90Forced", false)){
             mRefreshRate60.setEnabled(false);
             mRefreshRate90.setEnabled(false);
-            RefreshRateSwitch.setRefreshRateFinal(3);
+            RefreshRateSwitch.setRefreshRateFinal(2);
             }
             else if((Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) && prefs.getBoolean("refresh_rate_90Forced", false)){
             RefreshRateSwitch.isSmoothDisplayOnOnce = true;
             mRefreshRate60.setEnabled(false);
             mRefreshRate90.setEnabled(false);
-            }
             RefreshRateSwitch.setRefreshRateFinal(1);
+            }
         } else if ((prefs.getBoolean("refresh_rate_60", false))) {
             mRefreshRate90Forced.setEnabled(false);
             RefreshRateSwitch.setRefreshRateFinal(0);
