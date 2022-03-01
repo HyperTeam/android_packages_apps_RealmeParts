@@ -33,10 +33,16 @@ public class RefreshRateSwitch implements OnPreferenceChangeListener {
 
     private static final IBinder SF = ServiceManager.getService("SurfaceFlinger");
     public static int setRefreshRate;
+    /// Write GameModeSwitch.getIsSmoothDisplayOnOnce() method to find whether you have turned SmoothDisplay ON ever in this ROM
+    /// public static boolean isSmoothDisplayOnOnce = GameModeSwitch.getIsSmoothDisplayOnOnce();
+    /// Right now, it will always use force(60, 90 Hz) to switch refresh rate
+    public static boolean isSmoothDisplayOnOnce = true;
     private final Context mContext;
+    private static Context mmmContext;
 
     public RefreshRateSwitch(Context context) {
         mContext = context;
+        mmmContext = context;
     }
 
     public static boolean isCurrentlyEnabled(Context context) {
@@ -61,49 +67,58 @@ public class RefreshRateSwitch implements OnPreferenceChangeListener {
         }
     }
 
+    public static void setRefreshRateFinal(int setRefreshRate) {
+      switch (setRefreshRate) {
+          case 1:
+              Settings.System.putFloat(mmmContext.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), 90f);
+              Settings.System.putFloat(mmmContext.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), 90f);
+              if (isSmoothDisplayOnOnce && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)){setForcedRefreshRate(1);}
+              break;
+          case 0:
+              Settings.System.putFloat(mmmContext.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), 60f);
+              Settings.System.putFloat(mmmContext.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), 60f);
+              if (isSmoothDisplayOnOnce && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)){setForcedRefreshRate(0);}
+              break;
+          case 2:
+              setForcedRefreshRate(0);
+              break;
+          case 3:
+              setForcedRefreshRate(-1);
+              break;
+          case 4:
+              setForcedRefreshRate(1);
+              break;
+      }
+    }
+
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         Boolean enabled = (Boolean) newValue;
 
         if (preference == DeviceSettings.mRefreshRate90 && enabled) {
             setRefreshRate = 1;
+            DeviceSettings.mGameFPS.setEnabled(false);
         } else if (preference == DeviceSettings.mRefreshRate60 && enabled) {
             setRefreshRate = 0;
+            DeviceSettings.mGameFPS.setEnabled(true);
         } else if (preference == DeviceSettings.mRefreshRate90Forced && enabled) {
+            RefreshRateSwitch.isSmoothDisplayOnOnce = true;
             DeviceSettings.mRefreshRate60.setEnabled(false);
             DeviceSettings.mRefreshRate90.setEnabled(false);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                setRefreshRate = 4;
+                setRefreshRate = 1;
             } else setRefreshRate = 2;
         } else if (preference == DeviceSettings.mRefreshRate90Forced && !enabled) {
             DeviceSettings.mRefreshRate60.setEnabled(true);
             DeviceSettings.mRefreshRate90.setEnabled(true);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                setRefreshRate = 2;
+                setRefreshRate = 1;
             } else setRefreshRate = 3;
         }
 
-        switch (setRefreshRate) {
-            case 1:
-                Settings.System.putFloat(mContext.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), 90f);
-                Settings.System.putFloat(mContext.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), 90f);
-                break;
-            case 0:
-                Settings.System.putFloat(mContext.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), 60f);
-                Settings.System.putFloat(mContext.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), 60f);
-                break;
-            case 2:
-                setForcedRefreshRate(0);
-                break;
-            case 3:
-                setForcedRefreshRate(-1);
-                break;
-            case 4:
-                setForcedRefreshRate(1);
-                break;
-        }
+        RefreshRateSwitch.setRefreshRateFinal(RefreshRateSwitch.setRefreshRate);
         return true;
     }
 }

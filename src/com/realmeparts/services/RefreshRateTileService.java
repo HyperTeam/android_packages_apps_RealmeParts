@@ -26,10 +26,20 @@ import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 
 import androidx.preference.PreferenceManager;
+import android.os.Build;
+import android.os.IBinder;
+import android.os.Parcel;
+import android.os.RemoteException;
+import android.os.ServiceManager;
+import android.provider.Settings;
+import android.util.Log;
 
 @TargetApi(24)
 public class RefreshRateTileService extends TileService {
     private boolean enabled = false;
+    private boolean isSmoothDisplayEnabled = false;
+
+    private IBinder SF = ServiceManager.getService("SurfaceFlinger");
 
     @Override
     public void onDestroy() {
@@ -55,7 +65,6 @@ public class RefreshRateTileService extends TileService {
             getQsTile().setLabel(getResources().getString(R.string.unsupported));
         } else {
             enabled = RefreshRateSwitch.isCurrentlyEnabled(this);
-            RefreshRateSwitch.setPeakRefresh(this, enabled);
             getQsTile().setIcon(Icon.createWithResource(this,
                     GetSmoothDisplay() ? R.drawable.refresh_rate_90forced_icon : (enabled ? R.drawable.ic_refresh_tile_90 : R.drawable.ic_refresh_tile_60)));
             getQsTile().setState(GetSmoothDisplay() ? Tile.STATE_ACTIVE : (enabled ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE));
@@ -73,32 +82,66 @@ public class RefreshRateTileService extends TileService {
     public void onClick() {
         super.onClick();
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        enabled = RefreshRateSwitch.isCurrentlyEnabled(this);
+        enabled = sharedPrefs.getBoolean("refresh_rate_90", false) || sharedPrefs.getBoolean("refresh_rate_90Forced", false);
+
+        /// Smooth Display Disabled in A12
+        isSmoothDisplayEnabled = !(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S);
+        /// Smooth Display Disabled in A12
+
         boolean sTile = false;
-        if (getQsTile().getLabel() == "Refresh Rate" && RefreshRateSwitch.isCurrentlyEnabled(this)) {
+        if (getQsTile().getLabel() == "Refresh Rate") {
             sTile = true;
         }
 
-        if (sTile) {
-            getQsTile().setLabel("Smooth Display");
-            RefreshRateSwitch.setForcedRefreshRate(0);
+        if (sTile && enabled && isSmoothDisplayEnabled) {
+            RefreshRateTile(true);
             sharedPrefs.edit().putBoolean("refresh_rate_90Forced", true).apply();
-        } else {
-            RefreshRateSwitch.setForcedRefreshRate(-1);
-            sharedPrefs.edit().putBoolean("refresh_rate_90Forced", false).apply();
-            RefreshRateSwitch.setPeakRefresh(this, enabled);
-            Settings.System.putFloat(this.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), enabled ? 60f : 90f);
-            Settings.System.putFloat(this.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), enabled ? 60f : 90f);
+            sharedPrefs.edit().putBoolean("game_fps", false).apply();
+        } else if (sTile && enabled && !isSmoothDisplayEnabled) {
+           RefreshRateTile(false);
+           sharedPrefs.edit().putBoolean("refresh_rate_60", true).apply();
+           sharedPrefs.edit().putBoolean("refresh_rate_90", false).apply();
+           sharedPrefs.edit().putBoolean("game_fps", true).apply();
+        } else if (sTile && !enabled){
+            RefreshRateTile(true);
+            sharedPrefs.edit().putBoolean("refresh_rate_90", true).apply();
+            sharedPrefs.edit().putBoolean("refresh_rate_60", false).apply();
+            sharedPrefs.edit().putBoolean("game_fps", false).apply();
         }
-        getQsTile().setLabel(sharedPrefs.getBoolean("refresh_rate_90Forced", false) ? "Smooth Display" : "Refresh Rate");
+        else if (getQsTile().getLabel() == "Smooth Display" && enabled){
+            RefreshRateTile(false);
+            sharedPrefs.edit().putBoolean("refresh_rate_60", true).apply();
+            sharedPrefs.edit().putBoolean("refresh_rate_90", false).apply();
+            sharedPrefs.edit().putBoolean("refresh_rate_90Forced", false).apply();
+        }
+        getQsTile().setLabel(GetSmoothDisplay() ? "Smooth Display" : "Refresh Rate");
         getQsTile().setIcon(Icon.createWithResource(this,
-                sharedPrefs.getBoolean("refresh_rate_90Forced", false) ? R.drawable.refresh_rate_90forced_icon : (enabled ? R.drawable.ic_refresh_tile_60 : R.drawable.ic_refresh_tile_90)));
-        getQsTile().setState(sharedPrefs.getBoolean("refresh_rate_90Forced", false) ? Tile.STATE_ACTIVE : (enabled ? Tile.STATE_INACTIVE : Tile.STATE_ACTIVE));
+                GetSmoothDisplay() ? R.drawable.refresh_rate_90forced_icon : (enabled ? R.drawable.ic_refresh_tile_60 : R.drawable.ic_refresh_tile_90)));
+        getQsTile().setState(GetSmoothDisplay() ? Tile.STATE_ACTIVE : (enabled ? Tile.STATE_INACTIVE : Tile.STATE_ACTIVE));
         getQsTile().updateTile();
     }
 
     public boolean GetSmoothDisplay() {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         return sharedPrefs.getBoolean("refresh_rate_90Forced", false);
+    }
+
+    private void RefreshRateTile(boolean enabled) {
+      Settings.System.putFloat(this.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), enabled ? 90f : 60f);
+      Settings.System.putFloat(this.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), enabled ? 90f : 60f);
+      setForcedRefreshRate((Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ? (enabled ? 1 : 0) : (enabled ? 0 : -1));
+    }
+
+    public void setForcedRefreshRate(int value) {
+        Parcel Info = Parcel.obtain();
+        Info.writeInterfaceToken("android.ui.ISurfaceComposer");
+        Info.writeInt(value);
+        try {
+            SF.transact(1035, Info, null, 0);
+        } catch (RemoteException e) {
+            Log.e("DeviceSettings", e.toString());
+        } finally {
+            Info.recycle();
+        }
     }
 }
