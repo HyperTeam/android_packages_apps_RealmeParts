@@ -68,6 +68,7 @@ public class GameModeTileService extends TileService {
         mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         enabled = GameModeSwitch.isCurrentlyEnabled(this);
+        //DeviceSettings.mGameModeSwitch.setChecked(!enabled);
         if (!enabled) {
             AppNotification.Send(this, GameModeSwitch.GameMode_Notification_Channel_ID, this.getString(R.string.game_mode_title), this.getString(R.string.game_mode_notif_content));
         } else AppNotification.Cancel(this, GameModeSwitch.GameMode_Notification_Channel_ID);
@@ -76,6 +77,7 @@ public class GameModeTileService extends TileService {
         Utils.writeValue(DeviceSettings.TP_DIRECTION, enabled ? "0" : "1");
         SystemProperties.set("perf_profile", enabled ? "0" : "1");
         if (sharedPrefs.getBoolean("dnd", false)) GameModeTileDND();
+        GameModeSwitch.gameFPS(!enabled);
         sharedPrefs.edit().putBoolean(DeviceSettings.KEY_GAME_SWITCH, !enabled).commit();
         getQsTile().setState(enabled ? Tile.STATE_INACTIVE : Tile.STATE_ACTIVE);
         getQsTile().updateTile();

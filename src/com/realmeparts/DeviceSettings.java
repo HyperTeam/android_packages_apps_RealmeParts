@@ -40,6 +40,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
+import android.os.Build;
+
 public class DeviceSettings extends PreferenceFragment
         implements Preference.OnPreferenceChangeListener {
 
@@ -52,6 +54,7 @@ public class DeviceSettings extends PreferenceFragment
     public static final String KEY_CHARGING_SPEED = "charging_speed";
     public static final String KEY_RESET_STATS = "reset_stats";
     public static final String KEY_DND_SWITCH = "dnd";
+    public static final String KEY_GAME_FPS = "game_fps";
     public static final String KEY_CABC = "cabc";
     public static final String CABC_SYSTEM_PROPERTY = "persist.cabc_profile";
     public static final String KEY_FPS_INFO = "fps_info";
@@ -70,6 +73,7 @@ public class DeviceSettings extends PreferenceFragment
     public static SeekBarPreference mSeekBarPreference;
     public static DisplayManager mDisplayManager;
     private static NotificationManager mNotificationManager;
+    public static TwoStatePreference mGameFPS;
     public TwoStatePreference mDNDSwitch;
     public PreferenceCategory mPreferenceCategory;
     private TwoStatePreference mDCModeSwitch;
@@ -121,6 +125,11 @@ public class DeviceSettings extends PreferenceFragment
         mDNDSwitch.setChecked(prefs.getBoolean(KEY_DND_SWITCH, false));
         mDNDSwitch.setOnPreferenceChangeListener(this);
 
+        mGameFPS = findPreference(KEY_GAME_FPS);
+        mGameFPS.setChecked(prefs.getBoolean(KEY_GAME_FPS, false));
+        mGameFPS.setEnabled(!RefreshRateSwitch.isCurrentlyEnabled(this.getContext()));
+        mGameFPS.setOnPreferenceChangeListener(this);
+
         mSmartChargingSwitch = findPreference(KEY_CHARGING_SWITCH);
         mSmartChargingSwitch.setChecked(prefs.getBoolean(KEY_CHARGING_SWITCH, false));
         mSmartChargingSwitch.setOnPreferenceChangeListener(new SmartChargingSwitch(getContext()));
@@ -160,12 +169,40 @@ public class DeviceSettings extends PreferenceFragment
         mCABC.setOnPreferenceChangeListener(this);
 
         // Few checks to enable/disable options when activity is launched
-        if ((prefs.getBoolean("refresh_rate_90", false) && prefs.getBoolean("refresh_rate_90Forced", false))) {
+        if (prefs.getBoolean("refresh_rate_90", false)) {
+            if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) && prefs.getBoolean("refresh_rate_90Forced", false)){
             mRefreshRate60.setEnabled(false);
             mRefreshRate90.setEnabled(false);
+            RefreshRateSwitch.setRefreshRateFinal(3);
+            }
+            else if((Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) && prefs.getBoolean("refresh_rate_90Forced", false)){
+            RefreshRateSwitch.isSmoothDisplayOnOnce = true;
+            mRefreshRate60.setEnabled(false);
+            mRefreshRate90.setEnabled(false);
+            }
+            RefreshRateSwitch.setRefreshRateFinal(1);
         } else if ((prefs.getBoolean("refresh_rate_60", false))) {
             mRefreshRate90Forced.setEnabled(false);
+            RefreshRateSwitch.setRefreshRateFinal(0);
         }
+
+        /// Smooth Display Disabled in A12
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+          if (mRefreshRate90Forced.isEnabled() || mRefreshRate90Forced.isChecked() || prefs.getBoolean("refresh_rate_90Forced", false)){
+          mRefreshRate90Forced.setChecked(false);
+          mRefreshRate90Forced.setEnabled(false);
+          prefs.edit().putBoolean("refresh_rate_90Forced", false).apply();
+          mRefreshRate60.setEnabled(true);
+          mRefreshRate90.setEnabled(true);
+          mRefreshRate90.setChecked(true);
+          prefs.edit().putBoolean("refresh_rate_90", true).apply();
+          RefreshRateSwitch.setRefreshRateFinal(1);
+        }
+          else if (mRefreshRate60.isEnabled() && mRefreshRate90.isEnabled()){
+          mRefreshRate90Forced.setEnabled(false);}
+        }
+        /// Smooth Display Disabled in A12
+
 
         isCoolDownAvailable();
         DisplayRefreshRateModes();
@@ -181,7 +218,9 @@ public class DeviceSettings extends PreferenceFragment
         if (preference == mRefreshRate90) {
             mRefreshRate60.setChecked(false);
             mRefreshRate90.setChecked(true);
-            mRefreshRate90Forced.setEnabled(true);
+            /// Smooth Display Disabled in A12
+            if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)){mRefreshRate90Forced.setEnabled(true);}
+            /// Smooth Display Disabled in A12
             return true;
         } else if (preference == mRefreshRate60) {
             mRefreshRate60.setChecked(true);

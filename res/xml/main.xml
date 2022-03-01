@@ -91,6 +91,12 @@
             android:title="@string/dnd_title"
             android:summary="@string/dnd_summary" />
 
+        <SwitchPreference
+            android:key="game_fps"
+            android:icon="@drawable/ic_info_outline_24dp"
+            android:title="@string/game_fps_title"
+            android:summary="@string/game_fps_summary" />
+
         <Preference
             android:key="doze"
             android:title="@string/ambient_display_gestures_title"

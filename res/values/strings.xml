@@ -56,6 +56,8 @@
     <string name="tile_game_mode">Game Mode</string>
     <string name="dnd_title">Do Not Disturb</string>
     <string name="dnd_summary">DND will be activated if Game Mode is enabled</string>
+    <string name="game_fps_title">Game FPS</string>
+    <string name="game_fps_summary">90Hz will be activated if Game Mode is enabled and 60Hz when disabled\nIt is for 60 Hz users who want 90 Hz only while gaming\nOnly works if your toggle is set to 60 Hz (obvious)</string>
     <string name="game_mode_notif_content">Game Mode is activated</string>
     <!-- Refresh rate -->
     <string name="refresh_title">Screen Refresh Rate</string>

@@ -28,6 +28,8 @@ import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.PreferenceManager;
 
+import android.provider.Settings;
+
 public class GameModeSwitch implements OnPreferenceChangeListener {
     public static final int GameMode_Notification_Channel_ID = 0x11011;
     private static final String FILE = "/proc/touchpanel/game_switch_enable";
@@ -87,6 +89,29 @@ public class GameModeSwitch implements OnPreferenceChangeListener {
                 new NotificationManager.Policy(NotificationManager.Policy.PRIORITY_CATEGORY_MEDIA, 0, 0));
     }
 
+    public static boolean getIsSmoothDisplayOnOnce() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        return sharedPreferences.getBoolean("refresh_rate_90Forced", false);
+    }
+
+    public static void gameFPS(boolean enabled) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+        if (DeviceSettings.mGameFPS.isEnabled() && sharedPreferences.getBoolean("game_fps", false)) {
+          RefreshRateSwitch.setRefreshRateFinal(enabled ? 1 : 0);
+          if (enabled){DeviceSettings.mRefreshRate60.setChecked(false);
+                     DeviceSettings.mRefreshRate90.setChecked(true);
+                     sharedPreferences.edit().putBoolean("refresh_rate_90", true).apply();
+                     sharedPreferences.edit().putBoolean("refresh_rate_60", false).apply();
+                   }
+          else {DeviceSettings.mRefreshRate60.setChecked(true);
+                    DeviceSettings.mRefreshRate90.setChecked(false);
+                    sharedPreferences.edit().putBoolean("refresh_rate_90", false).apply();
+                    sharedPreferences.edit().putBoolean("refresh_rate_60", true).apply();
+                  }
+        }
+    }
+
     public static void ShowToast() {
         if (isCurrentlyEnabled(mContext)) {
             Toast.makeText(mContext, "GameMode is activated. ", Toast.LENGTH_SHORT).show();
@@ -101,6 +126,7 @@ public class GameModeSwitch implements OnPreferenceChangeListener {
         Utils.writeValue(DeviceSettings.TP_DIRECTION, enabled ? "1" : "0");
         SystemProperties.set("perf_profile", enabled ? "1" : "0");
         GameModeDND();
+        gameFPS(enabled);
         return true;
     }
 }
