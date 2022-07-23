@@ -47,7 +47,7 @@ public class RefreshRateSwitch implements OnPreferenceChangeListener {
         Settings.System.putFloat(context.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), enabled ? 90f : 60f);
     }
 
-    public static void setForcedRefreshRate(int value) {
+    public void setForcedRefreshRate(int value) {
         Parcel Info = Parcel.obtain();
         Info.writeInterfaceToken("android.ui.ISurfaceComposer");
         Info.writeInt(value);

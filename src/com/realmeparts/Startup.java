@@ -70,10 +70,6 @@ public class Startup extends BroadcastReceiver {
         if (enabled) {
             Utils.startService(context, FPSInfoService.class);
         }
-        enabled = sharedPrefs.getBoolean("refresh_rate_90Forced", false);
-        if (enabled) {
-            RefreshRateSwitch.setForcedRefreshRate(0);
-        }
         enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_HBM_SWITCH, false);
         if (enabled) {
             Utils.startService(context, HBMService.class);
