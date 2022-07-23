@@ -64,8 +64,6 @@
     <string name="refresh_rate_60_summary">Less smoothness but slightly extended battery life</string>
     <string name="refresh_rate_90_title">90Hz</string>
     <string name="refresh_rate_90_summary">Maximum smoothness with higher refresh rate but Apps&#47;Games can still limit to 60 FPS</string>
-    <string name="refresh_rate_90Forced_title">Smooth Display</string>
-    <string name="refresh_rate_90Forced_summary">Force display to 90Hz which improves touch responsiveness &amp; animation quality. Increases battery usage. </string>
     <!-- fps info -->
     <string name="fps_info_title">FPS overlay</string>
     <string name="fps_info_summary">Show overlay with current frames per second</string>
