@@ -30,6 +30,7 @@ import androidx.preference.PreferenceManager;
 @TargetApi(24)
 public class GameModeTileService extends TileService {
     private boolean enabled = false;
+    private boolean batteryenabled = false;
     private Context mContext;
     private NotificationManager mNotificationManager;
 
@@ -52,9 +53,15 @@ public class GameModeTileService extends TileService {
     public void onStartListening() {
         super.onStartListening();
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        batteryenabled = BatterySavingModeSwitch.isCurrentlyEnabled(this);
+        if (batteryenabled) {
+          getQsTile().setState(Tile.STATE_UNAVAILABLE);
+          getQsTile().updateTile();
+        } else {
         enabled = GameModeSwitch.isCurrentlyEnabled(this);
         getQsTile().setState(enabled ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
         getQsTile().updateTile();
+      }
     }
 
     @Override

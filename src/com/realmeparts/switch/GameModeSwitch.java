@@ -100,6 +100,7 @@ public class GameModeSwitch implements OnPreferenceChangeListener {
         Utils.writeValue(DeviceSettings.TP_LIMIT_ENABLE, enabled ? "0" : "1");
         Utils.writeValue(DeviceSettings.TP_DIRECTION, enabled ? "1" : "0");
         SystemProperties.set("perf_profile", enabled ? "1" : "0");
+        DeviceSettings.mBatterySavingModeSwitch.setEnabled(!enabled);
         GameModeDND();
         return true;
     }
