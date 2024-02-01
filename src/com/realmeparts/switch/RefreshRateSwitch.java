@@ -18,7 +18,7 @@
 package com.realmeparts;
 
 import android.content.Context;
-import android.os.IBinder;
+import android.os.SystemProperties;
 import android.provider.Settings;
 
 import androidx.preference.Preference;
@@ -34,21 +34,27 @@ public class RefreshRateSwitch implements OnPreferenceChangeListener {
     }
 
     public static boolean isCurrentlyEnabled(Context context) {
-        return Settings.System.getFloat(context.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), 90f) == 90f;
+        return Settings.System.getFloat(context.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), getDefaultRefreshRate()) == getDefaultRefreshRate();
     }
 
     public static void setPeakRefresh(Context context, boolean enabled) {
-        Settings.System.putFloat(context.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), enabled ? 90f : 60f);
-        Settings.System.putFloat(context.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), enabled ? 90f : 60f);
+        Settings.System.putFloat(context.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), enabled ? getDefaultRefreshRate() : 60f);
+        Settings.System.putFloat(context.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), enabled ? getDefaultRefreshRate() : 60f);
+    }
+
+    private static float getDefaultRefreshRate() {
+        return Float.parseFloat(SystemProperties.get("persist.high.refresh.rate", "90.0"));
     }
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         Boolean enabled = (Boolean) newValue;
+        float customRefreshRate = getDefaultRefreshRate();
+
         switch ((preference == DeviceSettings.mRefreshRate90 && enabled) ? 1 : 0) {
             case 1:
-                Settings.System.putFloat(mContext.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), 90f);
-                Settings.System.putFloat(mContext.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), 90f);
+                Settings.System.putFloat(mContext.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), customRefreshRate);
+                Settings.System.putFloat(mContext.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), customRefreshRate);
                 break;
             case 0:
                 Settings.System.putFloat(mContext.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), 60f);

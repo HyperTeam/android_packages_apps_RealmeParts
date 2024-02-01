@@ -21,6 +21,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Icon;
+import android.os.SystemProperties;
 import android.provider.Settings;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
@@ -56,6 +57,7 @@ public class RefreshRateTileService extends TileService {
         } else {
             enabled = RefreshRateSwitch.isCurrentlyEnabled(this);
             RefreshRateSwitch.setPeakRefresh(this, enabled);
+
             getQsTile().setIcon(Icon.createWithResource(this,
                     enabled ? R.drawable.ic_refresh_tile_90 : R.drawable.ic_refresh_tile_60));
             getQsTile().setState(enabled ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
@@ -74,8 +76,11 @@ public class RefreshRateTileService extends TileService {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         enabled = RefreshRateSwitch.isCurrentlyEnabled(this);
         RefreshRateSwitch.setPeakRefresh(this, enabled);
-        Settings.System.putFloat(this.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), enabled ? 60f : 90f);
-        Settings.System.putFloat(this.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), enabled ? 60f : 90f);
+
+        float customRefreshRate = Float.parseFloat(SystemProperties.get("persist.high.refresh.rate", "90.0"));
+
+        Settings.System.putFloat(this.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), enabled ? 60f : customRefreshRate);
+        Settings.System.putFloat(this.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), enabled ? 60f : customRefreshRate);
         getQsTile().setIcon(Icon.createWithResource(this,
                 enabled ? R.drawable.ic_refresh_tile_60 : R.drawable.ic_refresh_tile_90));
         getQsTile().setState(enabled ? Tile.STATE_INACTIVE : Tile.STATE_ACTIVE);
