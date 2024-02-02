@@ -114,19 +114,19 @@
         android:title="@string/refresh_title">
 
         <com.realmeparts.RadioButtonPreference
-            android:icon="@drawable/refresh_rate_60_icon"
-            android:key="refresh_rate_60"
+            android:icon="@drawable/refresh_rate_low_icon"
+            android:key="refresh_rate_low"
             android:checked="false"
-            android:title="@string/refresh_rate_60_title"
-            android:summary="@string/refresh_rate_60_summary" />
+            android:title="@string/refresh_rate_low_title"
+            android:summary="@string/refresh_rate_low_summary" />
 
         <com.realmeparts.RadioButtonPreference
-            android:icon="@drawable/refresh_rate_90_icon"
-            android:key="refresh_rate_90"
+            android:icon="@drawable/refresh_rate_high_icon"
+            android:key="refresh_rate_high"
             android:checked="true"
             android:enabled="true"
-            android:title="@string/refresh_rate_90_title"
-            android:summary="@string/refresh_rate_90_summary"  />
+            android:title="@string/refresh_rate_high_title"
+            android:summary="@string/refresh_rate_high_summary"  />
     </PreferenceCategory>
 
     <PreferenceCategory

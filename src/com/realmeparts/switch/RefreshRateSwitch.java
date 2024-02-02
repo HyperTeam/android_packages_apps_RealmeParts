@@ -51,7 +51,7 @@ public class RefreshRateSwitch implements OnPreferenceChangeListener {
         Boolean enabled = (Boolean) newValue;
         float customRefreshRate = getDefaultRefreshRate();
 
-        switch ((preference == DeviceSettings.mRefreshRate90 && enabled) ? 1 : 0) {
+        switch ((preference == DeviceSettings.mRefreshRateHigh && enabled) ? 1 : 0) {
             case 1:
                 Settings.System.putFloat(mContext.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), customRefreshRate);
                 Settings.System.putFloat(mContext.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), customRefreshRate);

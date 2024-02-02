@@ -51,7 +51,7 @@ public class RefreshRateTileService extends TileService {
     public void onStartListening() {
         super.onStartListening();
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if (!sharedPrefs.getBoolean("refresh_rate_90_device", false)) {
+        if (!sharedPrefs.getBoolean("refresh_rate_high_device", false)) {
             getQsTile().setState(Tile.STATE_UNAVAILABLE);
             getQsTile().setLabel(getResources().getString(R.string.unsupported));
         } else {
@@ -59,7 +59,7 @@ public class RefreshRateTileService extends TileService {
             RefreshRateSwitch.setPeakRefresh(this, enabled);
 
             getQsTile().setIcon(Icon.createWithResource(this,
-                    enabled ? R.drawable.ic_refresh_tile_90 : R.drawable.ic_refresh_tile_60));
+                    enabled ? R.drawable.ic_refresh_tile_high : R.drawable.ic_refresh_tile_low));
             getQsTile().setState(enabled ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
         }
         getQsTile().updateTile();
@@ -82,7 +82,7 @@ public class RefreshRateTileService extends TileService {
         Settings.System.putFloat(this.getContentResolver(), "PEAK_REFRESH_RATE".toLowerCase(), enabled ? 60f : customRefreshRate);
         Settings.System.putFloat(this.getContentResolver(), "MIN_REFRESH_RATE".toLowerCase(), enabled ? 60f : customRefreshRate);
         getQsTile().setIcon(Icon.createWithResource(this,
-                enabled ? R.drawable.ic_refresh_tile_60 : R.drawable.ic_refresh_tile_90));
+                enabled ? R.drawable.ic_refresh_tile_low : R.drawable.ic_refresh_tile_high));
         getQsTile().setState(enabled ? Tile.STATE_INACTIVE : Tile.STATE_ACTIVE);
         getQsTile().updateTile();
     }

@@ -65,8 +65,8 @@ public class DeviceSettings extends PreferenceFragment
     private static final String KEY_CATEGORY_REFRESH_RATE = "refresh_rate";
     public static SecureSettingListPreference mChargingSpeed;
     public static TwoStatePreference mResetStats;
-    public static RadioButtonPreference mRefreshRate90;
-    public static RadioButtonPreference mRefreshRate60;
+    public static RadioButtonPreference mRefreshRateHigh;
+    public static RadioButtonPreference mRefreshRateLow;
     public static SeekBarPreference mSeekBarPreference;
     public static DisplayManager mDisplayManager;
     private static NotificationManager mNotificationManager;
@@ -145,13 +145,13 @@ public class DeviceSettings extends PreferenceFragment
         mSeekBarPreference.setEnabled(mSmartChargingSwitch.isChecked());
         SeekBarPreference.mProgress = prefs.getInt("seek_bar", 95);
 
-        mRefreshRate90 = findPreference("refresh_rate_90");
-        mRefreshRate90.setChecked(RefreshRateSwitch.isCurrentlyEnabled(this.getContext()));
-        mRefreshRate90.setOnPreferenceChangeListener(new RefreshRateSwitch(getContext()));
+        mRefreshRateHigh = findPreference("refresh_rate_high");
+        mRefreshRateHigh.setChecked(RefreshRateSwitch.isCurrentlyEnabled(this.getContext()));
+        mRefreshRateHigh.setOnPreferenceChangeListener(new RefreshRateSwitch(getContext()));
 
-        mRefreshRate60 = findPreference("refresh_rate_60");
-        mRefreshRate60.setChecked(!RefreshRateSwitch.isCurrentlyEnabled(this.getContext()));
-        mRefreshRate60.setOnPreferenceChangeListener(new RefreshRateSwitch(getContext()));
+        mRefreshRateLow = findPreference("refresh_rate_low");
+        mRefreshRateLow.setChecked(!RefreshRateSwitch.isCurrentlyEnabled(this.getContext()));
+        mRefreshRateLow.setOnPreferenceChangeListener(new RefreshRateSwitch(getContext()));
 
         mFpsInfo = findPreference(KEY_FPS_INFO);
         mFpsInfo.setChecked(prefs.getBoolean(KEY_FPS_INFO, false));
@@ -173,13 +173,13 @@ public class DeviceSettings extends PreferenceFragment
 
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
-        if (preference == mRefreshRate90) {
-            mRefreshRate60.setChecked(false);
-            mRefreshRate90.setChecked(true);
+        if (preference == mRefreshRateHigh) {
+            mRefreshRateLow.setChecked(false);
+            mRefreshRateHigh.setChecked(true);
             return true;
-        } else if (preference == mRefreshRate60) {
-            mRefreshRate60.setChecked(true);
-            mRefreshRate90.setChecked(false);
+        } else if (preference == mRefreshRateLow) {
+            mRefreshRateLow.setChecked(true);
+            mRefreshRateHigh.setChecked(false);
             return true;
         }
         return super.onPreferenceTreeClick(preference);
@@ -235,10 +235,10 @@ public class DeviceSettings extends PreferenceFragment
         Log.d("DeviceSettings", "Device supports " + refreshRate + "refresh rate modes");
 
         if (!refreshRate.contains("90")) {
-            prefs.edit().putBoolean("refresh_rate_90_device", false).apply();
+            prefs.edit().putBoolean("refresh_rate_high_device", false).apply();
             mPreferenceCategory = (PreferenceCategory) findPreference(KEY_CATEGORY_REFRESH_RATE);
             getPreferenceScreen().removePreference(mPreferenceCategory);
-        } else prefs.edit().putBoolean("refresh_rate_90_device", true).apply();
+        } else prefs.edit().putBoolean("refresh_rate_high_device", true).apply();
     }
 
     private void ParseJson() throws JSONException {
