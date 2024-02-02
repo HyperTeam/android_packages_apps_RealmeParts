@@ -18,3 +18,12 @@ on property:persist.cabc_profile=2
     # CABC aggressive
 on property:persist.cabc_profile=3
     write /sys/kernel/oppo_display/cabc 3
+
+on property:ro.product.name=RMX2081
+    setprop persist.high.refresh.rate 120
+
+on property:ro.product.name=RMX2085L
+    setprop persist.high.refresh.rate 120
+
+on property:ro.product.name=RMX3371
+    setprop persist.high.refresh.rate 120

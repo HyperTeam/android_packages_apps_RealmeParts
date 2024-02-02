@@ -8,6 +8,7 @@ android_app {
     name: "RealmeParts",
     srcs: ["src/**/*.java"],
     resource_dirs: ["res"],
+    init_rc: ["init/parts.rc"],
     certificate: "platform",
     platform_apis: true,
     privileged: true,
