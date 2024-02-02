@@ -28,7 +28,8 @@ import androidx.preference.Preference.OnPreferenceChangeListener;
 
 public class HBMModeSwitch implements OnPreferenceChangeListener {
 
-    private static final String FILE = "/sys/kernel/oppo_display/hbm";
+    private static final String FILE1 = "/sys/kernel/oppo_display/hbm";
+    private static final String FILE2 = "/sys/kernel/oplus_display/hbm";
     private static Context mContext;
 
     public HBMModeSwitch(Context context) {
@@ -36,8 +37,10 @@ public class HBMModeSwitch implements OnPreferenceChangeListener {
     }
 
     public static String getFile() {
-        if (Utils.fileWritable(FILE)) {
-            return FILE;
+        if (Utils.fileWritable(FILE1)) {
+            return FILE1;
+        } else if (Utils.fileWritable(FILE2)) {
+            return FILE2;
         }
         return null;
     }
